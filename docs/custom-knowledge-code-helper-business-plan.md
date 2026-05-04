@@ -277,6 +277,23 @@ Recommended MVP architecture:
 | Redis | 1-2 GB RAM |
 | GPU | Not required |
 
+### MVP Hardware Cost Estimate
+
+These are approximate monthly cloud resource costs for early MVP operation. They exclude human cost and separate LLM token usage, which is covered in the MVP monthly OpEx section.
+
+| Resource | Estimated Monthly Cost | Notes |
+| --- | ---: | --- |
+| Frontend hosting | $0-$25 | Vercel, Cloudflare Pages, or similar starter tier |
+| Backend API compute | $100-$250 | Small VM, container service, or app platform |
+| Ingestion worker compute | $50-$200 | Can run as a small worker or scheduled job initially |
+| Managed PostgreSQL | $50-$200 | Small managed database instance |
+| Qdrant vector database | $0-$150 | Free or small managed cluster for early usage |
+| Redis/queue | $20-$100 | Managed Redis or lightweight queue service |
+| Object storage | $10-$100 | S3-compatible storage for uploads and repo snapshots |
+| Logging and basic monitoring | $50-$200 | Cloud-native logs or lightweight Grafana/Prometheus setup |
+
+**Estimated MVP hardware/resource cost:** $280-$1,225/month before LLM token usage.
+
 ### Phase 1 Hardware
 
 | Component | Estimated Resource |
@@ -291,6 +308,24 @@ Recommended MVP architecture:
 
 AWS G6 instances use NVIDIA L4 GPUs. AWS states G6 can scale up to 8 NVIDIA L4 Tensor Core GPUs with 24 GB memory per GPU and are designed for machine learning and graphics workloads. NVIDIA lists the L4 GPU with 24 GB GPU memory and 300 GB/s memory bandwidth. These specifications should be verified before final infrastructure purchase.
 
+### Phase 1 Hardware Cost Estimate
+
+Phase 1 costs increase because the platform needs stronger production isolation, staging environments, more ingestion capacity, and higher retrieval throughput.
+
+| Resource | Estimated Monthly Cost | Notes |
+| --- | ---: | --- |
+| Backend service replicas | $500-$1,500 | Multiple replicas for production reliability |
+| Ingestion worker pool | $400-$1,600 | More parallel indexing and embedding jobs |
+| Managed PostgreSQL | $500-$2,000 | Medium production database with backups |
+| Qdrant production cluster | $200-$1,000+ | Dedicated or larger managed cluster |
+| Managed Redis/queue | $100-$500 | Production queue and cache |
+| Object storage and transfer | $100-$500 | Repository snapshots, documents, and exports |
+| Dev/staging/prod environments | $500-$2,000 | Separate environments for release safety |
+| Monitoring, logs, and alerts | $300-$1,000 | Operational visibility and incident response |
+| Optional L4 GPU node | $600-$1,500+ | Only needed for limited self-hosted inference or experiments |
+
+**Estimated Phase 1 hardware/resource cost:** $2,600-$11,600/month, including optional GPU capacity and excluding LLM API usage.
+
 ### Phase 2 Hardware
 
 | Component | Estimated Resource |
@@ -301,6 +336,24 @@ AWS G6 instances use NVIDIA L4 GPUs. AWS states G6 can scale up to 8 NVIDIA L4 T
 | Ingestion | Separate worker pool |
 | Fine-tuning | Dedicated GPU jobs |
 | Enterprise | Single-tenant deployment option |
+
+### Phase 2 Hardware Cost Estimate
+
+Phase 2 hardware cost depends heavily on enterprise isolation, self-hosted model serving, GPU class, customer data volume, and availability requirements.
+
+| Resource | Estimated Monthly Cost | Notes |
+| --- | ---: | --- |
+| Kubernetes production infrastructure | $3,000-$15,000 | Autoscaling application and platform workloads |
+| GPU serving cluster | $5,000-$50,000+ | L4, A10, or H100 class depending on model size and traffic |
+| HA Qdrant cluster | $1,000-$5,000 | Higher availability vector retrieval layer |
+| HA PostgreSQL | $1,000-$5,000 | Production metadata, billing, and conversation database |
+| Redis/queue cluster | $500-$3,000 | Higher throughput ingestion and async jobs |
+| Object storage, backups, and transfer | $1,000-$5,000 | Larger private repositories, documents, and retention |
+| Dedicated ingestion workers | $1,000-$5,000 | Batch ingestion and embedding workloads |
+| Observability and security tooling | $2,000-$10,000 | Logs, metrics, tracing, SIEM, audit, and compliance support |
+| Enterprise single-tenant environments | $3,000-$20,000+ | Per-customer private deployment or VPC option |
+
+**Estimated Phase 2 hardware/resource cost:** $17,500-$118,000+/month before LLM API fallback, support tooling, and customer success cost.
 
 ## 8. Model Strategy
 
@@ -395,6 +448,8 @@ For a SaaS MVP, most costs are OpEx, not traditional CapEx, because the product 
 
 **Estimated MVP monthly OpEx range:** $500-$3,000/month
 
+The MVP hardware/resource estimate in Section 7 is approximately $280-$1,225/month before LLM token usage. The full OpEx range is higher because it also includes LLM usage, email/auth services, security tooling, and miscellaneous SaaS operating costs.
+
 Qdrant Cloud's free tier can support early experiments, and paid usage scales based on cluster resources. Pricing should be verified before final budgeting.
 
 ## 11. Phase 1 Budget Estimate
@@ -425,6 +480,8 @@ Move from MVP to paid pilot customers.
 
 **Estimated Phase 1 monthly OpEx range:** $5k-$20k/month
 
+The Phase 1 hardware/resource estimate in Section 7 is approximately $2.6k-$11.6k/month, including optional GPU capacity and excluding LLM API usage. The full OpEx range includes model usage, support tools, security operations, and staging/production overhead.
+
 **Estimated Phase 1 build and operational investment:** $150k-$300k
 
 ## 12. Phase 2 Budget Estimate
@@ -454,6 +511,8 @@ Scale to enterprise customers, larger teams, private deployment, and optional se
 | Data ingestion jobs | $1k-$5k |
 
 **Estimated Phase 2 monthly OpEx range:** $25k-$150k/month
+
+The Phase 2 hardware/resource estimate in Section 7 is approximately $17.5k-$118k+/month before LLM API fallback and support costs. GPU serving and single-tenant enterprise deployments are the largest potential cost drivers.
 
 GPU cost can become the biggest cost driver. Third-party cloud pricing trackers may show G6 instances near the low single-digit dollar-per-hour range and H100-class instances at much higher rates. These numbers should be verified in the target AWS region before final investor submission.
 

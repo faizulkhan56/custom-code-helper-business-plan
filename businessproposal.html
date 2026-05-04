@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CodeMind SaaS Business Proposal</title>
+  <style>
+    :root {
+      --ink: #14213d;
+      --muted: #5f6b7a;
+      --line: #d9e1ea;
+      --paper: #ffffff;
+      --soft: #f5f7fb;
+      --green: #157f5b;
+      --teal: #0c6b78;
+      --gold: #b7791f;
+      --red: #b42318;
+      --blue: #2457a7;
+      --shadow: 0 18px 45px rgba(20, 33, 61, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--soft);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      padding: 6px 0;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .hero {
+      background:
+        linear-gradient(90deg, rgba(20, 33, 61, 0.92), rgba(12, 107, 120, 0.78)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900' viewBox='0 0 1600 900'%3E%3Crect width='1600' height='900' fill='%2314213d'/%3E%3Cg opacity='0.22' stroke='%23ffffff' stroke-width='2' fill='none'%3E%3Cpath d='M80 160h340v180H80zM500 120h300v120H500zM920 170h420v210H920zM210 470h390v210H210zM720 430h270v150H720zM1070 500h360v180h-360z'/%3E%3Cpath d='M420 250h80M800 180h120M600 575h120M990 510h80M1340 275h90'/%3E%3C/g%3E%3Cg opacity='0.28' fill='%23ffffff'%3E%3Ccircle cx='425' cy='250' r='6'/%3E%3Ccircle cx='800' cy='180' r='6'/%3E%3Ccircle cx='990' cy='510' r='6'/%3E%3Ccircle cx='1340' cy='275' r='6'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+    }
+
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      min-height: 78vh;
+      padding: 72px 22px 54px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 38px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: #bfe7dc;
+      font-size: 13px;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 860px;
+      font-size: clamp(42px, 6vw, 76px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 24px 0 0;
+      font-size: 19px;
+      color: #e8eef6;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      background: #fff;
+      color: var(--ink);
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .hero-panel {
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--ink);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      background: #eef4f2;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .panel-tag {
+      color: var(--green);
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--line);
+    }
+
+    .metric {
+      background: #fff;
+      padding: 18px;
+      min-height: 112px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 25px;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 42px 22px 80px;
+    }
+
+    section {
+      margin-top: 42px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(28px, 3.2vw, 42px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .section-lead {
+      margin: 0 0 22px;
+      max-width: 850px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(20, 33, 61, 0.06);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .label {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .business-case {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .problem-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .problem-row {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      margin-top: 8px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .solution-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .flow-step {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      min-height: 114px;
+    }
+
+    .flow-step b {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: table;
+    }
+
+    th, td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #eef4f8;
+      color: var(--ink);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .number {
+      text-align: right;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+
+    .phase-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .phase {
+      border-top: 5px solid var(--blue);
+    }
+
+    .phase:nth-child(2) {
+      border-top-color: var(--green);
+    }
+
+    .phase:nth-child(3) {
+      border-top-color: var(--gold);
+    }
+
+    .phase ul,
+    .clean-list {
+      padding-left: 18px;
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .phase li,
+    .clean-list li {
+      margin: 6px 0;
+    }
+
+    .bar-chart {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 90px;
+      gap: 12px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .bar-track {
+      height: 14px;
+      background: #e7edf3;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .milestone {
+      min-height: 148px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .milestone time {
+      display: block;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .milestone p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .ask {
+      background: #101b32;
+      color: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .ask h2,
+    .ask p {
+      color: #fff;
+    }
+
+    .ask .section-lead {
+      color: #d8e0ea;
+    }
+
+    .allocation {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .allocation .bar-track {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .allocation .bar-fill {
+      background: #70d6a5;
+    }
+
+    .footer {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 22px 48px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .print-note {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+
+    @media (max-width: 940px) {
+      .hero-inner,
+      .business-case,
+      .grid.two,
+      .grid.three,
+      .phase-strip,
+      .ask {
+        grid-template-columns: 1fr;
+      }
+
+      .solution-flow,
+      .timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-inner {
+        min-height: auto;
+        padding-top: 54px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links {
+        gap: 10px;
+      }
+
+      .hero-panel .metric-grid,
+      .solution-flow,
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    @media print {
+      .topbar,
+      .hero-actions {
+        display: none;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .hero {
+        background: #14213d;
+      }
+
+      main {
+        padding-top: 24px;
+      }
+
+      section {
+        break-inside: avoid;
+      }
+
+      .card,
+      .milestone,
+      .hero-panel {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="Proposal navigation">
+      <a class="brand" href="#top" aria-label="CodeMind SaaS proposal">
+        <span class="brand-mark">CM</span>
+        <span>CodeMind SaaS</span>
+      </a>
+      <div class="nav-links">
+        <a href="#opportunity">Opportunity</a>
+        <a href="#model">Business Model</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#financials">Financials</a>
+        <a href="#ask">Investor Ask</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">Investor business proposal</p>
+        <h1>CodeMind SaaS</h1>
+        <p class="hero-copy">
+          A secure custom knowledge-based AI code assistant for small and mid-sized engineering teams that need faster onboarding, better code understanding, safer internal Q&A, and practical DevOps support.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="#ask">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            View Investor Ask
+          </a>
+          <button class="button secondary" type="button" onclick="window.print()">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Print Proposal
+          </button>
+        </div>
+      </div>
+
+      <aside class="hero-panel" aria-label="Proposal snapshot">
+        <div class="panel-head">
+          <p class="panel-title">Business Snapshot</p>
+          <span class="panel-tag">SME-first SaaS</span>
+        </div>
+        <div class="metric-grid">
+          <div class="metric">
+            <strong>10-12 weeks</strong>
+            <span>Estimated MVP build timeline</span>
+          </div>
+          <div class="metric">
+            <strong>$250k-$500k</strong>
+            <span>Suggested seed or pre-seed ask</span>
+          </div>
+          <div class="metric">
+            <strong>$499</strong>
+            <span>Example average paying team plan</span>
+          </div>
+          <div class="metric">
+            <strong>60%-80%</strong>
+            <span>Estimated gross margin target after optimization</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main>
+    <section id="opportunity">
+      <h2>Executive Summary</h2>
+      <p class="section-lead">
+        CodeMind SaaS is positioned as an affordable, secure AI coding assistant for SME engineering teams. It connects to a company's private repositories, documentation, runbooks, and coding standards so developers can ask questions and receive grounded answers with source context.
+      </p>
+
+      <div class="business-case">
+        <article class="card">
+          <span class="label">Problem</span>
+          <h3>Engineering knowledge is fragmented</h3>
+          <p>
+            Small and mid-sized software teams lose time searching documents, asking senior engineers repeated questions, debugging recurring errors, and onboarding new developers into complex repositories.
+          </p>
+          <div class="problem-list">
+            <div class="problem-row"><span class="dot"></span><span>Private code and internal standards are not understood by general AI chatbots.</span></div>
+            <div class="problem-row"><span class="dot"></span><span>Senior engineers spend valuable time answering repeated context questions.</span></div>
+            <div class="problem-row"><span class="dot"></span><span>Ungoverned AI usage creates data leakage and compliance concerns.</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <span class="label">Solution</span>
+          <h3>A private knowledge-based code helper</h3>
+          <p>
+            The assistant answers from each customer's own technical knowledge base using RAG, vector search, tenant isolation, source citations, and usage-based billing. The MVP uses hosted LLM APIs to launch quickly without expensive model training.
+          </p>
+          <div class="solution-flow" aria-label="Product flow">
+            <div class="flow-step"><b>Connect</b><span>Docs, code files, and repo snapshots</span></div>
+            <div class="flow-step"><b>Index</b><span>Chunk and store private knowledge</span></div>
+            <div class="flow-step"><b>Ask</b><span>Developers use chat for answers</span></div>
+            <div class="flow-step"><b>Ground</b><span>Retrieve source-backed context</span></div>
+            <div class="flow-step"><b>Bill</b><span>Track tokens and usage by tenant</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Target Customers</h2>
+      <p class="section-lead">
+        The first commercial wedge is SME software teams that need practical developer productivity gains without enterprise procurement complexity.
+      </p>
+      <div class="grid three">
+        <article class="card">
+          <span class="label">Primary</span>
+          <h3>Small software companies</h3>
+          <p>Affordable private codebase Q&A, onboarding support, and internal documentation assistance.</p>
+        </article>
+        <article class="card">
+          <span class="label">Expansion</span>
+          <h3>SaaS and DevOps teams</h3>
+          <p>Python, backend, CI/CD, Kubernetes, runbook, and debugging support across operational workflows.</p>
+        </article>
+        <article class="card">
+          <span class="label">Later stage</span>
+          <h3>Enterprise teams</h3>
+          <p>SSO, audit logs, private deployment, data governance, and optional self-hosted model serving.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="model">
+      <h2>Product and Revenue Model</h2>
+      <p class="section-lead">
+        The business model combines subscription plans with usage-based expansion. This keeps entry pricing accessible for SMEs while preserving upside as team usage, storage, and AI token volume grow.
+      </p>
+
+      <div class="grid two">
+        <article class="card">
+          <h3>Suggested Pricing</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Monthly Price</th>
+                <th>Positioning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Free/Trial</td>
+                <td class="number">$0</td>
+                <td>Limited tokens, demo use, public docs only</td>
+              </tr>
+              <tr>
+                <td>Developer Pro</td>
+                <td class="number">$19-$49/user</td>
+                <td>Personal usage and small repositories</td>
+              </tr>
+              <tr>
+                <td>Team</td>
+                <td class="number">$99-$299/team</td>
+                <td>Shared workspace and repository ingestion</td>
+              </tr>
+              <tr>
+                <td>Business</td>
+                <td class="number">$499-$1,999/month</td>
+                <td>Private knowledge base and higher usage</td>
+              </tr>
+              <tr>
+                <td>Enterprise</td>
+                <td class="number">Custom</td>
+                <td>SSO, audit logs, private deployment</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="card">
+          <h3>Revenue Expansion Logic</h3>
+          <p>Paid expansion can come from extra tokens, repository storage, ingestion jobs, MCP tool calls, and additional private workspaces.</p>
+          <div class="bar-chart" style="margin-top: 18px;">
+            <div class="bar-row">
+              <span>10 teams</span>
+              <span class="bar-track"><span class="bar-fill" style="width: 10%;"></span></span>
+              <strong>~$5k MRR</strong>
+            </div>
+            <div class="bar-row">
+              <span>50 teams</span>
+              <span class="bar-track"><span class="bar-fill" style="width: 24%;"></span></span>
+              <strong>~$25k</strong>
+            </div>
+            <div class="bar-row">
+              <span>100 teams</span>
+              <span class="bar-track"><span class="bar-fill" style="width: 42%;"></span></span>
+              <strong>~$50k</strong>
+            </div>
+            <div class="bar-row">
+              <span>500 teams</span>
+              <span class="bar-track"><span class="bar-fill" style="width: 100%;"></span></span>
+              <strong>~$250k</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <h2>Phased Execution Plan</h2>
+      <p class="section-lead">
+        The recommended path starts with a focused MVP, proves customer value and willingness to pay, then expands into paid pilots and enterprise-grade capability.
+      </p>
+
+      <div class="phase-strip">
+        <article class="card phase">
+          <span class="label">MVP</span>
+          <h3>10-12 weeks</h3>
+          <p>Hosted LLM, Qdrant RAG, SaaS chat, source citations, tenant isolation, admin dashboard, and usage metering.</p>
+          <ul>
+            <li>4-6 person team</li>
+            <li>$20k-$70k human cost estimate</li>
+            <li>$500-$3k monthly OpEx estimate</li>
+          </ul>
+        </article>
+
+        <article class="card phase">
+          <span class="label">Phase 1</span>
+          <h3>4-6 months after MVP</h3>
+          <p>Paid pilot product with GitHub integration, billing, team management, advanced RAG, model routing, and analytics.</p>
+          <ul>
+            <li>8-12 person team</li>
+            <li>$150k-$300k build and operational investment</li>
+            <li>$5k-$20k monthly OpEx estimate</li>
+          </ul>
+        </article>
+
+        <article class="card phase">
+          <span class="label">Phase 2</span>
+          <h3>6-12 months after Phase 1</h3>
+          <p>Enterprise product with SSO, audit logs, private deployment, IDE integrations, PR review automation, and optional self-hosted LLM.</p>
+          <ul>
+            <li>15-25 person team</li>
+            <li>$25k-$150k monthly OpEx estimate</li>
+            <li>GPU and enterprise isolation become major cost drivers</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="financials">
+      <h2>Financial Summary</h2>
+      <p class="section-lead">
+        Most early costs are operating expenses because the MVP should rely on managed cloud services and hosted LLM APIs. GPU-heavy infrastructure should wait until customer demand justifies it.
+      </p>
+
+      <div class="grid two">
+        <article class="card">
+          <h3>Budget and Infrastructure Estimates</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Build Investment</th>
+                <th>Monthly OpEx</th>
+                <th>Hardware/Resource Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MVP</td>
+                <td class="number">$20k-$70k</td>
+                <td class="number">$500-$3k</td>
+                <td class="number">$280-$1.2k</td>
+              </tr>
+              <tr>
+                <td>Phase 1</td>
+                <td class="number">$150k-$300k</td>
+                <td class="number">$5k-$20k</td>
+                <td class="number">$2.6k-$11.6k</td>
+              </tr>
+              <tr>
+                <td>Phase 2</td>
+                <td class="number">Expansion-led</td>
+                <td class="number">$25k-$150k</td>
+                <td class="number">$17.5k-$118k+</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="card">
+          <h3>Gross Margin Assumption</h3>
+          <p>Example operating assumption: average paying team at $499/month, with LLM and infrastructure cost of $100-$180/month per team after usage controls.</p>
+          <div class="bar-chart" style="margin-top: 18px;">
+            <div class="bar-row">
+              <span>Revenue</span>
+              <span class="bar-track"><span class="bar-fill" style="width: 100%;"></span></span>
+              <strong>$499</strong>
+            </div>
+            <div class="bar-row">
+              <span>AI + infra</span>
+              <span class="bar-track"><span class="bar-fill" style="width: 36%; background: var(--gold);"></span></span>
+              <strong>$100-$180</strong>
+            </div>
+            <div class="bar-row">
+              <span>Target margin</span>
+              <span class="bar-track"><span class="bar-fill" style="width: 75%; background: var(--green);"></span></span>
+              <strong>60%-80%</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Go-To-Market Plan</h2>
+      <p class="section-lead">
+        The initial motion should be founder-led and community-driven, targeting teams that already feel pain around private repository understanding, onboarding, Python support, and DevOps documentation.
+      </p>
+
+      <div class="timeline" aria-label="Go-to-market timeline">
+        <article class="milestone">
+          <time>Month 0-3</time>
+          <h3>Build MVP</h3>
+          <p>Prepare demo-ready SaaS with private knowledge Q&A.</p>
+        </article>
+        <article class="milestone">
+          <time>Month 3</time>
+          <h3>Investor demo</h3>
+          <p>Show chat, upload, source citation, and usage tracking.</p>
+        </article>
+        <article class="milestone">
+          <time>Month 4-5</time>
+          <h3>Private beta</h3>
+          <p>Test with 5-10 design partner teams.</p>
+        </article>
+        <article class="milestone">
+          <time>Month 6</time>
+          <h3>Paid pilot</h3>
+          <p>Convert first customers into recurring revenue.</p>
+        </article>
+        <article class="milestone">
+          <time>Month 7-9</time>
+          <h3>Public launch</h3>
+          <p>Launch SaaS plans and usage-based billing.</p>
+        </article>
+        <article class="milestone">
+          <time>Month 10-12</time>
+          <h3>Expansion</h3>
+          <p>Move toward larger teams and enterprise pilots.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Risk and Mitigation</h2>
+      <div class="grid two">
+        <article class="card">
+          <h3>Commercial Risks</h3>
+          <ul class="clean-list">
+            <li><b>Weak differentiation:</b> focus on private codebase Q&A, Python, DevOps, and internal documentation.</li>
+            <li><b>Enterprise trust gap:</b> build audit logs, access controls, and private deployment roadmap.</li>
+            <li><b>Customer adoption risk:</b> start with design partners and prove recurring usage before heavy infrastructure investment.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Operating Risks</h3>
+          <ul class="clean-list">
+            <li><b>LLM cost too high:</b> use model routing, caching, token caps, and usage-based billing.</li>
+            <li><b>Hallucination:</b> use RAG citations and source-first answer patterns.</li>
+            <li><b>Data leakage:</b> enforce tenant isolation, access control, and deletion workflows.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="ask" class="ask">
+      <div>
+        <span class="label" style="color:#70d6a5;">Investor Ask</span>
+        <h2>$250k-$500k seed or pre-seed</h2>
+        <p class="section-lead">
+          Funding is intended to build the MVP, launch beta, acquire 10-25 paying teams, reach an estimated $10k-$25k MRR, and prepare for enterprise pilots.
+        </p>
+      </div>
+
+      <div class="allocation">
+        <h3>Use of Funds</h3>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <span>Product engineering</span>
+            <span class="bar-track"><span class="bar-fill" style="width: 45%;"></span></span>
+            <strong>45%</strong>
+          </div>
+          <div class="bar-row">
+            <span>AI/RAG development</span>
+            <span class="bar-track"><span class="bar-fill" style="width: 20%;"></span></span>
+            <strong>20%</strong>
+          </div>
+          <div class="bar-row">
+            <span>Cloud/LLM infra</span>
+            <span class="bar-track"><span class="bar-fill" style="width: 15%;"></span></span>
+            <strong>15%</strong>
+          </div>
+          <div class="bar-row">
+            <span>GTM/sales</span>
+            <span class="bar-track"><span class="bar-fill" style="width: 10%;"></span></span>
+            <strong>10%</strong>
+          </div>
+          <div class="bar-row">
+            <span>Security/legal</span>
+            <span class="bar-track"><span class="bar-fill" style="width: 10%;"></span></span>
+            <strong>10%</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Final Recommendation</h2>
+      <div class="card">
+        <p>
+          The best path is to prove business value before investing in heavy model infrastructure. Start with a hosted LLM, Qdrant-based RAG, SaaS chat, source citations, tenant isolation, and token usage tracking. Do not start by training a 70B or 79B model. Investors will care most about whether teams get useful answers from their own private knowledge, whether they pay monthly for it, and whether the system can deliver those answers at acceptable cost.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="print-note">
+      This standalone proposal summarizes the full technical and business plan. All figures are estimates and should be validated against actual customer usage, selected cloud region, vendor pricing, and final implementation scope before formal investor submission.
+    </p>
+  </footer>
+</body>
+</html>

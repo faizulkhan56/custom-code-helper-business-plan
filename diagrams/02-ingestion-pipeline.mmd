@@ -1,0 +1,11 @@
+flowchart TD
+    Upload[Upload Docs or Repo ZIP] --> Store[Object Storage]
+    Store --> Queue[Redis Queue]
+    Queue --> Parse[Parse Files]
+    Parse --> Filter[Secret and File Filtering]
+    Filter --> Chunk[Code Aware Chunking]
+    Chunk --> Embed[Create Embeddings]
+    Embed --> Index[Store Vectors in Qdrant]
+    Chunk --> Meta[Store Metadata in PostgreSQL]
+    Index --> Ready[Knowledge Ready for Chat]
+    Meta --> Ready

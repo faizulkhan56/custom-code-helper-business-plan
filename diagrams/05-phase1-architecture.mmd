@@ -1,0 +1,18 @@
+flowchart LR
+    UI[Web App] --> Gateway[API Gateway]
+    Gateway --> App[Backend Services]
+    App --> Router[Model Router]
+    Router --> Cheap[Lower Cost LLM]
+    Router --> Strong[Advanced Code LLM]
+    App --> RAG[Hybrid RAG Service]
+    RAG --> Qdrant[Dedicated Qdrant Cluster]
+    RAG --> PG[Managed PostgreSQL]
+    App --> Billing[Stripe Billing]
+    App --> Audit[Audit Logs]
+    App --> MCP[MCP Connectors]
+    MCP --> GitHub[GitHub Repos]
+    MCP --> Docs[Documentation]
+    MCP --> CI[CI Logs]
+    Workers[Worker Pool] --> Qdrant
+    Workers --> PG
+    Workers --> Storage[Object Storage]

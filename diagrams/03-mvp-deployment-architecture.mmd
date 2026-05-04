@@ -1,0 +1,13 @@
+flowchart LR
+    Browser[Browser] --> Frontend[Vercel or Cloudflare Pages]
+    Frontend --> API[Backend API Container]
+    API --> PG[Managed PostgreSQL]
+    API --> Redis[Managed Redis]
+    API --> S3[S3 Compatible Storage]
+    API --> Qdrant[Qdrant Cloud]
+    API --> LLM[Hosted LLM API]
+    API --> Monitor[Logs and Metrics]
+    Worker[Ingestion Worker] --> Redis
+    Worker --> S3
+    Worker --> Qdrant
+    Worker --> PG

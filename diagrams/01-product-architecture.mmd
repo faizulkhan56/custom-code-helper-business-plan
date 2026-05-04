@@ -1,0 +1,20 @@
+flowchart LR
+    User[Developer or Admin] --> UI[Web Chat UI]
+    UI --> API[Backend API]
+    API --> Auth[Auth and Tenant Guard]
+    API --> Chat[Chat Orchestrator]
+    Chat --> Retrieve[RAG Retrieval]
+    Retrieve --> Qdrant[Qdrant Vector DB]
+    Retrieve --> Postgres[PostgreSQL Metadata]
+    Chat --> LLM[Hosted LLM API]
+    API --> Usage[Token Usage Metering]
+    API --> Storage[Object Storage]
+    API --> Queue[Redis Queue]
+    Queue --> Worker[Ingestion Worker]
+    Worker --> Storage
+    Worker --> Embed[Embedding Service]
+    Embed --> Qdrant
+    Chat --> Tools[MCP Tools]
+    Tools --> GitHub[GitHub]
+    Tools --> CI[CI Logs]
+    Tools --> Docs[Docs Lookup]

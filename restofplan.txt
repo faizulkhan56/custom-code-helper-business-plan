@@ -1,0 +1,500 @@
+Phase 1 Model Strategy
+
+Use model router:
+
+Simple Q&A → cheap model
+Code explanation → mid model
+Complex debugging → advanced model
+Enterprise private tenant → self-hosted model option
+Phase 2 Model Strategy
+
+Self-host selected open-source code model using:
+
+vLLM
+Kubernetes
+GPU autoscaling
+Quantization
+Prompt caching
+Batching
+9. CapEx and OpEx
+Key Definition
+Term	Meaning
+CapEx	One-time setup/build investment
+OpEx	Monthly running cost
+
+For a SaaS MVP, most costs are OpEx, not traditional CapEx, because you use cloud/API services.
+
+10. MVP Budget Estimate
+MVP Duration
+10–12 weeks
+MVP Team Size
+4–6 people
+MVP Build Cost Estimate
+Role	Count	Duration	Approx Cost
+Tech Lead/Architect	1	3 months	$6k–$15k
+Backend Engineer	1	3 months	$4k–$12k
+Frontend Engineer	1	2–3 months	$3k–$9k
+AI/RAG Engineer	1	3 months	$5k–$15k
+DevOps Engineer	0.5–1	2 months	$3k–$8k
+QA/Product Support	0.5	1–2 months	$1k–$4k
+MVP Human Cost Range
+Low-cost lean team: $20k–$35k
+Stronger professional team: $40k–$70k
+MVP Monthly OpEx
+Item	Monthly Cost Estimate
+Hosting backend/API	$100–$300
+PostgreSQL	$50–$200
+Qdrant	$0–$150
+Redis/Queue	$20–$100
+Object storage	$10–$100
+LLM API usage	$200–$2,000 initially
+Monitoring/logging	$50–$200
+Email/auth/misc	$30–$100
+Domain/security/tools	$20–$100
+MVP Monthly OpEx Range
+$500–$3,000/month
+
+Qdrant Cloud’s free tier can support early experiments, and paid usage scales based on cluster resources; Qdrant describes cloud pricing as resource-usage based.
+
+11. Phase 1 Budget Estimate
+Phase 1 Duration
+4–6 months after MVP
+Phase 1 Goal
+
+Move from MVP to paid pilot customers.
+
+Phase 1 Team Size
+8–12 people
+Phase 1 Monthly OpEx
+Item	Monthly Cost Estimate
+Production cloud infra	$1k–$3k
+LLM API usage	$2k–$10k
+Qdrant production cluster	$200–$1k+
+Database/Redis/storage	$500–$2k
+Monitoring/security	$300–$1k
+Dev/staging/prod environments	$500–$2k
+Support and customer success tools	$200–$1k
+Phase 1 Monthly OpEx Range
+$5k–$20k/month
+Phase 1 Build/Operational Investment
+$150k–$300k
+12. Phase 2 Budget Estimate
+Phase 2 Duration
+6–12 months after Phase 1
+Phase 2 Goal
+
+Scale to enterprise customers, larger teams, private deployment, and optional self-hosted model serving.
+
+Phase 2 Team Size
+15–25 people
+Phase 2 Monthly OpEx
+Item	Monthly Cost Estimate
+GPU serving	$5k–$50k+
+Kubernetes production infra	$3k–$15k
+LLM API fallback	$5k–$30k
+Vector DB HA cluster	$1k–$5k
+Observability/security/compliance	$2k–$10k
+Support/customer success	$5k–$20k
+Data ingestion jobs	$1k–$5k
+Phase 2 Monthly OpEx Range
+$25k–$150k/month
+
+GPU cost can become the biggest cost driver. As a reference point, third-party EC2 trackers list g6.xlarge around $0.8048/hour, while larger H100-class P5 instances are much more expensive; one cloud pricing analysis cites P5 starting around $27.39/hour. These numbers should be verified in the target AWS region before final investor submission.
+
+13. Revenue Model
+Suggested Pricing
+Plan	Monthly Price	Included Usage
+Free/Trial	$0	Limited tokens, public docs only
+Developer Pro	$19–$49/user	Personal usage, small repo
+Team	$99–$299/team	Shared workspace, repo ingestion
+Business	$499–$1,999/month	More tokens, private knowledge base
+Enterprise	Custom	SSO, audit logs, private deployment
+Usage-Based Add-on
+Extra input/output tokens
+Extra repo storage
+Extra ingestion jobs
+Extra MCP tool calls
+Extra private workspaces
+
+Stripe supports usage-based billing models where customers are charged based on actual product usage.
+
+Example Unit Economics
+
+Assume:
+
+Average paying team = $499/month
+LLM + infra cost per team = $100–$180/month
+Gross margin = 60%–80%
+
+If you reach:
+
+Customers	Monthly Revenue
+10 teams	~$5k MRR
+50 teams	~$25k MRR
+100 teams	~$50k MRR
+500 teams	~$250k MRR
+14. MVP Feature Scope
+MVP Must-Have Features
+Feature	Description
+User signup/login	Email/password or OAuth
+Workspace/tenant	Each client has own workspace
+Chat interface	Streaming AI answer
+Code-aware markdown	Syntax-highlighted code blocks
+RAG ingestion	Upload docs/repo files
+Qdrant search	Retrieve relevant chunks
+Source citation	Show where answer came from
+Token tracking	Track input/output tokens
+Admin panel	View usage and sources
+Basic billing-ready data	Store usage for future billing
+Guardrails	Prevent cross-tenant leakage
+Logs/monitoring	Basic observability
+MVP Should Not Include
+Training a 79B model
+Complex fine-tuning
+Enterprise SSO
+Air-gapped deployment
+Full IDE extension
+Full PR automation
+Unlimited external MCP tools
+15. MVP Deployment Plan
+MVP Deployment Target
+Cloud-based SaaS
+Single region
+Multi-tenant but logically isolated
+API LLM-based
+Managed vector DB/database where possible
+Recommended MVP Deployment
+MVP Environment
+dev
+staging
+production
+MVP Deployment Tools
+Area	Tool
+Frontend	Vercel / Cloudflare Pages
+Backend	Docker + ECS/Fargate / Render / Railway / Kubernetes later
+Database	Managed PostgreSQL
+Vector DB	Qdrant Cloud
+Object storage	S3-compatible
+CI/CD	GitHub Actions
+Monitoring	Grafana/Prometheus or cloud monitoring
+Billing later	Stripe
+16. MVP Timeline
+Total MVP Time
+10–12 weeks
+Sprint Plan
+
+Assume 2-week sprints.
+
+Sprint	Duration	Goal
+Sprint 0	1 week	Product discovery and architecture
+Sprint 1	2 weeks	Auth, tenant, base chat UI
+Sprint 2	2 weeks	LLM integration and streaming
+Sprint 3	2 weeks	RAG ingestion and Qdrant retrieval
+Sprint 4	2 weeks	Admin, usage metering, security
+Sprint 5	2 weeks	Pilot readiness, QA, deployment
+Buffer	1 week	Fixes and investor demo polish
+17. MVP User Stories
+User Story 1: Developer Chat
+As a developer,
+I want to ask a Python question in chat,
+so that I can get code help quickly.
+
+Acceptance criteria:
+
+User can submit question
+Answer streams in UI
+Code blocks are formatted
+Conversation history is saved
+User Story 2: Upload Knowledge
+As a team admin,
+I want to upload internal docs or repo files,
+so that the assistant can answer from company knowledge.
+
+Acceptance criteria:
+
+Admin uploads file
+System chunks file
+Embeddings are created
+Chunks are stored in Qdrant
+Assistant retrieves relevant chunks
+User Story 3: Private Repo Q&A
+As a developer,
+I want to ask questions about my project codebase,
+so that I can understand internal services faster.
+
+Acceptance criteria:
+
+Assistant retrieves only tenant-specific code
+Answer cites matching files/chunks
+No cross-tenant retrieval
+User Story 4: Token Usage
+As a SaaS admin,
+I want to track token usage by tenant,
+so that I can bill customers correctly.
+
+Acceptance criteria:
+
+Input tokens stored
+Output tokens stored
+Model name stored
+Conversation ID stored
+Tenant usage report available
+User Story 5: Admin Knowledge Management
+As an admin,
+I want to see uploaded sources,
+so that I can manage the knowledge base.
+
+Acceptance criteria:
+
+Admin can view sources
+Admin can delete source
+Deleted source is removed from retrieval
+18. Phase 1 Plan
+Phase 1 Objective
+
+Convert MVP into paid pilot-ready product.
+
+Timeline
+4–6 months
+Features
+Area	Phase 1 Feature
+GitHub integration	Connect repo, index selected branches
+Advanced RAG	Hybrid search, metadata filtering
+Billing	Stripe subscription + token usage
+Team management	Invite members, roles
+Security	Audit logs, secret detection
+Model routing	Cheap/strong model selection
+Admin analytics	Usage dashboard
+Feedback loop	Thumbs up/down, answer rating
+Prompt evaluation	Regression tests for answer quality
+MCP beta	GitHub/docs/CI connector
+Phase 1 Architecture Upgrade
+19. Phase 2 Plan
+Phase 2 Objective
+
+Enterprise-scale product.
+
+Timeline
+6–12 months after Phase 1
+Features
+Area	Phase 2 Feature
+Enterprise SSO	SAML/OIDC
+Private deployment	VPC/on-prem/air-gapped option
+Self-hosted LLM	vLLM GPU serving
+Fine-tuning	Optional customer/domain fine-tune
+IDE plugin	VS Code/JetBrains extension
+PR review bot	GitHub/GitLab PR review
+Advanced MCP	Controlled tool marketplace
+Compliance	SOC2-style controls
+Data governance	Retention, deletion, DLP
+Enterprise analytics	Productivity reports
+Phase 2 Architecture
+20. Go-To-Market Plan
+MVP-to-Market Flow
+GTM Timeline
+Period	Activity
+Month 0–3	Build MVP
+Month 3	Demo to investors/design partners
+Month 4–5	Private beta with 5–10 teams
+Month 6	Paid pilot
+Month 7–9	Public launch
+Month 10–12	Team/enterprise expansion
+Initial Customer Acquisition Channels
+LinkedIn technical content
+DevOps/Python communities
+MLOps communities
+GitHub marketplace later
+Partnership with training centers
+Direct outreach to small software companies
+Product Hunt launch
+Technical blogs and demos
+21. Team Structure
+MVP Team
+MVP Team Details
+Role	Responsibility
+Founder/Product Owner	Vision, customer discovery, investor pitch
+Tech Lead	Architecture, code quality, model strategy
+Backend Engineer	API, auth, usage, conversations
+Frontend Engineer	Chat UI, dashboard, admin panel
+AI/RAG Engineer	Ingestion, embeddings, Qdrant, prompt orchestration
+DevOps Engineer	CI/CD, cloud deployment, monitoring
+QA/Product Analyst	Test cases, user stories, demo validation
+Phase 1 Team
+8–12 people
+Role	Count
+Product Manager	1
+Engineering Manager/Tech Lead	1
+Backend Engineers	2
+Frontend Engineers	1–2
+AI/RAG Engineers	2
+DevOps/SRE	1
+QA Engineer	1
+Customer Success/Support	1
+Sales/Founder-led GTM	1
+Phase 2 Team
+15–25 people
+Department	Roles
+Product	PM, UX Designer
+Engineering	Backend, frontend, AI, platform
+Infra	SRE, security engineer
+AI	Model engineer, evaluation engineer
+GTM	Sales, customer success, solution engineer
+Compliance	Security/compliance lead
+22. Organization Chart for Phase 1
+23. Detailed Work Plan
+Workstream 1: Product and UX
+Task	Output
+Define personas	Developer, team admin, enterprise admin
+Define MVP user journeys	Chat, upload docs, ask repo question
+Wireframe UI	Chat + admin + usage
+Define pricing page	Plan structure
+Investor demo script	5-minute product demo
+Workstream 2: Backend
+Task	Output
+Auth	Login/signup
+Tenant model	Workspace isolation
+Conversation API	Chat sessions
+Usage tracking	Token logs
+Admin API	Sources, users, usage
+Billing-ready schema	Stripe integration later
+Workstream 3: AI/RAG
+Task	Output
+Chunking strategy	Code-aware chunking
+Embeddings	Store vectors
+Qdrant schema	Tenant-aware collections
+Retrieval	Top-k + metadata filtering
+Prompt template	RAG answer format
+Evaluation set	50–100 test questions
+Workstream 4: Ingestion
+Task	Output
+File upload	PDF/MD/TXT/code
+Repo ingestion	MVP maybe ZIP upload first
+Queue worker	Async indexing
+Metadata tagging	Source, file, tenant
+Deletion	Remove stale chunks
+Workstream 5: Infrastructure
+Task	Output
+Dockerize services	Local dev
+CI/CD	GitHub Actions
+Staging	Test deployment
+Production	MVP SaaS
+Monitoring	Logs, metrics
+Backup	DB/object storage backup
+Workstream 6: Security
+Task	Output
+Tenant isolation	No cross-client access
+API auth	JWT/session
+Role-based access	Admin/member
+Secret filtering	Detect secrets in uploads
+Audit logs	Admin/security review
+Data deletion	Client can remove sources
+24. Investor-Focused Milestones
+Milestone	Timeline	Evidence
+Prototype	Week 4	Chat + LLM response
+RAG MVP	Week 8	Upload docs, ask questions
+Private beta	Week 12	3–5 test teams
+Paid pilot	Month 5–6	First revenue
+Phase 1 launch	Month 7–9	Public SaaS
+Enterprise pilot	Month 10–12	Larger customer
+25. Key Risks and Mitigation
+Risk	Mitigation
+LLM cost too high	Model routing, caching, usage caps
+Hallucination	RAG citations, source-first answering
+Data leakage	Tenant isolation, access control
+Poor retrieval	Hybrid search, metadata filtering
+Slow ingestion	Queue workers, batch embeddings
+Weak differentiation	Focus on private codebase + DevOps/Python
+Enterprise trust gap	Audit logs, private deployment roadmap
+Competition	Niche focus and custom knowledge base
+26. Recommended MVP Tech Stack
+Layer	Recommendation
+Frontend	Next.js / React
+Backend	FastAPI or NestJS
+Database	PostgreSQL
+Vector DB	Qdrant
+Cache/Queue	Redis
+Object Storage	S3-compatible
+LLM	Hosted API first
+Model Serving Later	vLLM
+Billing	Stripe
+Auth	Auth0/Clerk/custom JWT
+Deployment	Docker + managed cloud
+Monitoring	Grafana/Prometheus or cloud-native monitoring
+27. MVP Feature Backlog
+Priority P0
+Login/signup
+Tenant/workspace
+Chat UI
+LLM response
+File upload
+Embedding and Qdrant storage
+RAG response
+Usage tracking
+Basic admin dashboard
+Priority P1
+GitHub repo connector
+Stripe integration
+Team invite
+Source citation
+Feedback button
+Answer history
+Basic secret detection
+Priority P2
+MCP connector
+CI/CD logs connector
+PR review assistant
+VS Code extension
+Enterprise SSO
+Self-hosted model
+Fine-tuning
+28. Suggested Investor Ask
+
+For MVP + Phase 1, you can ask for:
+
+$250k–$500k seed/pre-seed
+
+Use of funds:
+
+Category	Allocation
+Product engineering	45%
+AI/RAG development	20%
+Cloud/LLM infrastructure	15%
+GTM/sales	10%
+Security/compliance	5%
+Legal/admin	5%
+12-Month Goal
+Build MVP
+Launch beta
+Acquire 10–25 paying teams
+Reach $10k–$25k MRR
+Prepare enterprise pilot
+29. Final Investor Narrative
+
+You can present the business like this:
+
+We are building a secure custom knowledge-based AI code assistant for Python, DevOps, and backend engineering teams. Unlike general chatbots, our platform connects to a company’s private repositories, documentation, runbooks, and coding standards. It uses RAG, vector search, controlled tool access, and LLM routing to provide accurate code help, debugging, test generation, and onboarding support.
+
+The MVP can be built in 10–12 weeks using existing LLM APIs and Qdrant. Phase 1 will add GitHub integration, billing, team management, analytics, and paid pilots. Phase 2 will expand to enterprise features such as SSO, audit logs, private deployment, self-hosted model serving, and IDE integrations.
+
+30. Final Recommendation
+
+Your best path is:
+
+MVP:
+Hosted LLM + Qdrant RAG + SaaS chat + usage metering
+
+Phase 1:
+Paid team product + GitHub integration + billing + analytics
+
+Phase 2:
+Enterprise product + self-hosted LLM + private deployment + IDE/PR automation
+
+Do not start by training a 79B model.
+
+Start by proving:
+
+Can teams get useful, trusted coding answers from their own private knowledge?
+Will they pay monthly for it?
+Can your system deliver accurate answers at acceptable cost?
+
+That is the business feasibility point investors will care about most.

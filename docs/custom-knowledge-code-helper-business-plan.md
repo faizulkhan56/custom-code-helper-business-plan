@@ -1013,6 +1013,8 @@ flowchart TD
 
 ## 23. Detailed Work Plan
 
+Detailed MVP delivery and deployment artifact: `docs/mvp-delivery-and-deployment-guideline.md`
+
 ### Workstream 1: Product and UX
 
 | Task | Output |

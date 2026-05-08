@@ -733,7 +733,7 @@
       <div class="grid two">
         <article class="card">
           <h3>Client-Wise SaaS Design</h3>
-          <p>Each software firm gets a tenant-isolated workspace with admin accounts, user accounts, private sources, package limits, and billing records. Client admins can review tenant usage and individual user-wise usage, while each developer can see only personal usage.</p>
+          <p>Each software firm gets a tenant-isolated workspace with admin accounts, user accounts, private sources, package limits, and billing records. Client admins can review tenant usage and individual user-wise usage, each developer can see only personal usage, and provider admins can monitor client workspaces separately for support and billing operations.</p>
         </article>
 
         <article class="card">
@@ -822,7 +822,7 @@
         <article class="card phase">
           <span class="label">MVP</span>
           <h3>10-12 weeks</h3>
-          <p>Hosted LLM, shared Qdrant RAG with tenant filters, SaaS chat, source citations, Python/PHP/.NET support, admin dashboard, and user-wise usage metering.</p>
+          <p>Hosted LLM, shared Qdrant RAG with tenant filters, SaaS chat, source citations, Python/PHP/.NET support, client admin dashboard, central SaaS admin console, and user-wise usage metering.</p>
           <ul>
             <li>4-6 person team</li>
             <li>$20k-$70k human cost estimate</li>
@@ -850,6 +850,39 @@
             <li>$25k-$150k monthly OpEx estimate</li>
             <li>GPU and enterprise isolation become major cost drivers</li>
           </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>MVP Customer Journeys</h2>
+      <p class="section-lead">
+        The MVP experience is organized around the same core features: login, client workspaces, chat, Python/PHP/.NET code support, RAG ingestion, source citations, token tracking, client admin reporting, central SaaS monitoring, billing-ready data, guardrails, and logs. The detailed execution artifact is maintained separately in docs/mvp-user-journeys.md.
+      </p>
+
+      <div class="grid two">
+        <article class="card">
+          <span class="label">Client developer</span>
+          <h3>Ask and verify</h3>
+          <p>A developer signs into the client workspace, asks a coding or internal knowledge question, receives a streaming answer grounded in universal coding knowledge and tenant-specific private sources, checks citations, and reviews only personal usage.</p>
+        </article>
+
+        <article class="card">
+          <span class="label">Client admin</span>
+          <h3>Manage workspace</h3>
+          <p>A client admin uploads docs or repository files, monitors ingestion, manages sources, reviews package limits, and sees tenant usage plus individual user-wise token usage for the client company.</p>
+        </article>
+
+        <article class="card">
+          <span class="label">Provider admin</span>
+          <h3>Operate SaaS</h3>
+          <p>A central SaaS admin monitors each client workspace separately, reviews usage and ingestion health, supports billing operations, and uses guardrails so normal workflows do not expose one client's private knowledge to another client.</p>
+        </article>
+
+        <article class="card">
+          <span class="label">Support and billing</span>
+          <h3>Assist and reconcile</h3>
+          <p>Support users troubleshoot onboarding and ingestion using operational metadata, while billing operators review package usage, token records, and billing-ready data before Stripe usage billing is automated.</p>
         </article>
       </div>
     </section>

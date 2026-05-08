@@ -139,6 +139,7 @@ Usage-based billing is a common SaaS pricing pattern where customers are charged
 | Billing | Tracks token usage for SaaS billing |
 | Admin portal | Manages users, repositories, sources, package limits, and user-wise usage |
 | User portal | Lets individual users view only their own usage and conversation history |
+| Central SaaS admin | Monitors client workspaces separately for support, usage control, and billing operations |
 | MCP/tools | Provides controlled GitHub, documentation, and CI access |
 
 ## 4. Technical Architecture
@@ -642,9 +643,25 @@ The hosted LLM API is economically feasible because the product is not reselling
 | Token tracking | Track input and output tokens |
 | Admin panel | View sources, package limits, tenant usage, and individual user-wise usage |
 | User usage view | Each user can view only their own token and conversation usage |
+| Central SaaS admin console | Monitor client workspaces separately, review package usage, and support billing operations |
 | Basic billing-ready data | Store usage for future billing |
 | Guardrails | Prevent cross-tenant leakage |
 | Logs/monitoring | Basic observability |
+
+### MVP User Journeys
+
+Detailed journey artifact: `docs/mvp-user-journeys.md`
+
+| User Type | Primary Goal | MVP Features Used |
+| --- | --- | --- |
+| Client developer user | Ask coding and internal knowledge questions through chat | User signup/login, workspace/tenant, chat interface, code-aware Markdown, MVP language coverage, Qdrant search, source citation, token tracking, user usage view, guardrails |
+| Client admin user | Manage the client workspace, uploaded knowledge, users, package limits, and team usage | User signup/login, workspace/tenant, RAG ingestion, admin panel, token tracking, basic billing-ready data, logs/monitoring, guardrails |
+| Central SaaS admin | Monitor and support all client workspaces separately without cross-tenant data leakage | Central SaaS admin console, workspace/tenant, token tracking, basic billing-ready data, logs/monitoring, guardrails |
+| Founder/product operator | Run demos, inspect adoption, and validate which teams receive value | Chat interface, source citation, token tracking, central SaaS admin console, logs/monitoring, basic billing-ready data |
+| Support/customer success user | Help client admins troubleshoot onboarding, uploads, and usage questions | Central SaaS admin console, logs/monitoring, workspace/tenant, admin panel, source management metadata |
+| Finance/billing operator | Prepare package usage reports and billing reconciliation | Token tracking, basic billing-ready data, central SaaS admin console, admin panel |
+
+For the MVP, the developer journey proves source-backed chat value; the client admin journey proves workspace and knowledge-base control; the central SaaS admin journey proves provider-side operations, usage monitoring, and tenant separation. Support, billing, founder/product, and investor reviewer journeys are secondary but important because they connect the product workflow to onboarding, revenue operations, demos, and investor validation.
 
 ### MVP Should Not Include
 
@@ -786,6 +803,17 @@ Acceptance criteria:
 - Admin can view sources.
 - Admin can delete a source.
 - Deleted source is removed from retrieval.
+
+### User Story 6: Central SaaS Admin Monitoring
+
+As a central SaaS admin, I want to monitor client workspaces separately so that I can support customers, control usage risk, and prepare billing data without breaking tenant isolation.
+
+Acceptance criteria:
+
+- Central admin can view tenant list, package status, usage summary, and ingestion status.
+- Central admin can inspect logs and operational metadata by tenant.
+- Central admin can export or review billing-ready usage records.
+- Central admin cannot retrieve another client's private knowledge through normal chat workflows.
 
 ## 18. Phase 1 Plan
 
@@ -989,9 +1017,9 @@ flowchart TD
 
 | Task | Output |
 | --- | --- |
-| Define personas | Developer, team admin, enterprise admin |
-| Define MVP user journeys | Chat, upload docs, ask repository question |
-| Wireframe UI | Chat, admin, and usage screens |
+| Define personas | Developer, client admin, central SaaS admin, support, billing operator |
+| Define MVP user journeys | Chat, upload docs, ask repository question, monitor clients, review usage |
+| Wireframe UI | Chat, client admin, central admin, and usage screens |
 | Define pricing page | Plan structure |
 | Investor demo script | 5-minute product demo |
 
@@ -1003,7 +1031,7 @@ flowchart TD
 | Tenant model | Workspace isolation |
 | Conversation API | Chat sessions |
 | Usage tracking | Token logs |
-| Admin API | Sources, users, usage |
+| Admin API | Sources, users, tenant usage, user-wise usage, central tenant monitoring |
 | Billing-ready schema | Stripe integration later |
 
 ### Workstream 3: AI/RAG
@@ -1044,7 +1072,7 @@ flowchart TD
 | --- | --- |
 | Tenant isolation | No cross-client access |
 | API auth | JWT or session authentication |
-| Role-based access | Admin and member roles |
+| Role-based access | Developer, client admin, and central SaaS admin roles |
 | Secret filtering | Detect secrets in uploads |
 | Audit logs | Admin and security review |
 | Data deletion | Client can remove sources |
@@ -1104,6 +1132,7 @@ flowchart TD
 - RAG response
 - Usage tracking
 - Basic admin dashboard
+- Central SaaS admin console
 
 ### Priority P1
 

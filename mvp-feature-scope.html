@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MVP Feature Scope - CodeMind SaaS</title>
+  <style>
+    :root {
+      --ink: #18212f;
+      --muted: #5d6878;
+      --line: #dbe3ee;
+      --panel: #ffffff;
+      --soft: #f5f7fb;
+      --navy: #203a59;
+      --green: #0f8f72;
+      --blue: #2868c7;
+      --gold: #b7791f;
+      --red: #b5413c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+      line-height: 1.5;
+    }
+
+    header {
+      background: #122033;
+      color: #fff;
+      padding: 42px 5vw 34px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #93c5fd;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 920px;
+      margin: 18px 0 0;
+      color: #dbeafe;
+      font-size: 18px;
+    }
+
+    main {
+      padding: 34px 5vw 56px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: -62px 0 30px;
+    }
+
+    .metric, .card, .scope-table, .do-not {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 14px 30px rgba(27, 38, 57, .08);
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 18px;
+      border-radius: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    section { margin-top: 30px; }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .section-lead {
+      max-width: 940px;
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 180px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .green { background: var(--green); }
+    .gold { background: var(--gold); }
+    .red { background: var(--red); }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    li + li { margin-top: 7px; }
+
+    .scope-table {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf3fb;
+      color: var(--navy);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    td:first-child { font-weight: 750; }
+    tr:last-child td { border-bottom: 0; }
+
+    .do-not {
+      border-left: 5px solid var(--red);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .step {
+      position: relative;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 116px;
+    }
+
+    .step b {
+      display: block;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    footer {
+      padding: 18px 5vw 34px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .summary, .feature-grid, .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      header, main, footer { padding-left: 18px; padding-right: 18px; }
+      .summary, .feature-grid, .flow { grid-template-columns: 1fr; }
+      .summary { margin-top: -34px; }
+      th, td { padding: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">MVP artifact</p>
+    <h1>Feature Scope for Custom Knowledge-Based Code Helper</h1>
+    <p class="lead">A focused investor and product view of the MVP: client-wise SaaS workspaces, source-backed coding chat, private RAG, universal coding knowledge, user-wise usage, and provider-side monitoring.</p>
+  </header>
+
+  <main>
+    <div class="summary" aria-label="MVP feature summary">
+      <div class="metric"><strong>15</strong><span>MVP feature groups kept in scope</span></div>
+      <div class="metric"><strong>3</strong><span>Initial code language families: Python, PHP, .NET</span></div>
+      <div class="metric"><strong>1</strong><span>Shared Qdrant cluster with tenant filters</span></div>
+      <div class="metric"><strong>10-12</strong><span>Estimated MVP build weeks</span></div>
+    </div>
+
+    <section>
+      <h2>Feature Groups</h2>
+      <p class="section-lead">The MVP is intentionally scoped around the smallest complete SaaS workflow: sign in, enter a client workspace, ask coding questions, retrieve trusted context, cite sources, track usage, and operate the platform safely.</p>
+
+      <div class="feature-grid">
+        <article class="card">
+          <span class="tag"><i class="dot"></i>User Access</span>
+          <h3>Login, tenant workspace, and role boundaries</h3>
+          <ul>
+            <li>User signup/login through email/password or OAuth.</li>
+            <li>Each client company gets its own workspace.</li>
+            <li>Developer, client admin, and central SaaS admin roles.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="tag"><i class="dot green"></i>Developer Chat</span>
+          <h3>Source-backed coding assistant</h3>
+          <ul>
+            <li>Streaming AI chat answers.</li>
+            <li>Code-aware Markdown with syntax-highlighted examples.</li>
+            <li>Python, PHP, and .NET support through prompts, parsing, and RAG evaluation.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="tag"><i class="dot gold"></i>Knowledge Layer</span>
+          <h3>Universal plus tenant-specific RAG</h3>
+          <ul>
+            <li>RAG ingestion for documents and repository files.</li>
+            <li>Shared universal coding knowledge collection.</li>
+            <li>Tenant-specific private chunks retrieved with strict filters.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="tag"><i class="dot"></i>Evidence</span>
+          <h3>Citations and answer trust</h3>
+          <ul>
+            <li>Show where each answer came from.</li>
+            <li>Support source-backed debugging and onboarding.</li>
+            <li>Reduce hallucination risk through source-first response patterns.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="tag"><i class="dot green"></i>Usage</span>
+          <h3>Client and user-wise metering</h3>
+          <ul>
+            <li>Track input and output tokens.</li>
+            <li>Client admins see tenant and individual user-wise usage.</li>
+            <li>Developers see only personal usage.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="tag"><i class="dot gold"></i>Operations</span>
+          <h3>Provider monitoring and billing readiness</h3>
+          <ul>
+            <li>Central SaaS admin console for separate client monitoring.</li>
+            <li>Billing-ready usage records for future Stripe integration.</li>
+            <li>Logs, monitoring, and guardrails for multi-tenant operation.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>MVP Feature List</h2>
+      <div class="scope-table">
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>User signup/login</td><td>Email/password or OAuth.</td></tr>
+            <tr><td>Workspace/tenant</td><td>Each client has its own workspace.</td></tr>
+            <tr><td>Chat interface</td><td>Streaming AI answers.</td></tr>
+            <tr><td>Code-aware Markdown</td><td>Syntax-highlighted code blocks.</td></tr>
+            <tr><td>MVP language coverage</td><td>Python, PHP, and .NET code assistance through prompts, parsing, and RAG evaluation.</td></tr>
+            <tr><td>RAG ingestion</td><td>Upload documents and repository files.</td></tr>
+            <tr><td>Qdrant search</td><td>Retrieve universal coding knowledge plus tenant-specific private chunks.</td></tr>
+            <tr><td>Source citation</td><td>Show where answer came from.</td></tr>
+            <tr><td>Token tracking</td><td>Track input and output tokens.</td></tr>
+            <tr><td>Admin panel</td><td>View sources, package limits, tenant usage, and individual user-wise usage.</td></tr>
+            <tr><td>User usage view</td><td>Each user can view only their own token and conversation usage.</td></tr>
+            <tr><td>Central SaaS admin console</td><td>Monitor client workspaces separately, review package usage, and support billing operations.</td></tr>
+            <tr><td>Basic billing-ready data</td><td>Store usage for future billing.</td></tr>
+            <tr><td>Guardrails</td><td>Prevent cross-tenant leakage.</td></tr>
+            <tr><td>Logs/monitoring</td><td>Basic observability.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>SaaS Workflow</h2>
+      <div class="flow">
+        <div class="step"><b>1. Sign in</b><span>User enters the correct client workspace through tenant membership.</span></div>
+        <div class="step"><b>2. Upload</b><span>Client admin uploads docs, repositories, standards, and runbooks.</span></div>
+        <div class="step"><b>3. Retrieve</b><span>Qdrant returns universal coding knowledge plus tenant-specific private chunks.</span></div>
+        <div class="step"><b>4. Answer</b><span>Hosted LLM generates cited answers for Python, PHP, .NET, and DevOps questions.</span></div>
+        <div class="step"><b>5. Meter</b><span>Usage is tracked by tenant and user for packages, support, and billing.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Explicitly Out of MVP</h2>
+      <div class="do-not">
+        <ul>
+          <li>Training a 70B or 79B model.</li>
+          <li>Complex fine-tuning.</li>
+          <li>Enterprise SSO or air-gapped deployment.</li>
+          <li>Full IDE extension or full pull request automation.</li>
+          <li>Unlimited external MCP tools.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Source aligned with docs/custom-knowledge-code-helper-business-plan.md and docs/mvp-user-journeys.md.
+  </footer>
+</body>
+</html>

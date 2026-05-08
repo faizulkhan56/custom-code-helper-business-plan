@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MVP User Journeys - CodeMind SaaS</title>
+  <style>
+    :root {
+      --ink: #17202e;
+      --muted: #5d6878;
+      --line: #d9e2ee;
+      --panel: #ffffff;
+      --soft: #f4f7fb;
+      --navy: #17324f;
+      --blue: #2b6cc4;
+      --green: #0f8f72;
+      --gold: #b7791f;
+      --red: #b5413c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+      line-height: 1.5;
+    }
+
+    header {
+      padding: 42px 5vw 32px;
+      background: #112235;
+      color: #fff;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #9bd2ff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 920px;
+      margin: 18px 0 0;
+      color: #dbeafe;
+      font-size: 18px;
+    }
+
+    main {
+      padding: 34px 5vw 58px;
+    }
+
+    .journey-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: -60px 0 30px;
+    }
+
+    .map-card, .journey, .matrix, .trace {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 14px 30px rgba(27, 38, 57, .08);
+    }
+
+    .map-card {
+      min-height: 130px;
+      padding: 18px;
+    }
+
+    .map-card b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: 18px;
+    }
+
+    .map-card span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    section { margin-top: 32px; }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .section-lead {
+      max-width: 960px;
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    .journeys {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .journey {
+      overflow: hidden;
+    }
+
+    .journey-head {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fbff;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .green { background: var(--green); }
+    .gold { background: var(--gold); }
+    .red { background: var(--red); }
+
+    h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .journey-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e9f1fb;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .step p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .outcome {
+      margin: 0;
+      padding: 14px 18px 18px;
+      color: var(--green);
+      font-weight: 750;
+      border-top: 1px solid var(--line);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #edf3fb;
+      color: var(--navy);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { font-weight: 750; }
+
+    .trace-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .trace {
+      padding: 16px;
+      min-height: 130px;
+    }
+
+    .trace b {
+      display: block;
+      color: var(--navy);
+      margin-bottom: 7px;
+    }
+
+    .trace span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    footer {
+      padding: 18px 5vw 34px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1040px) {
+      .journey-map, .trace-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 800px) {
+      .journeys { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      header, main, footer { padding-left: 18px; padding-right: 18px; }
+      .journey-map, .trace-grid { grid-template-columns: 1fr; }
+      .journey-map { margin-top: -34px; }
+      th, td { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">MVP artifact</p>
+    <h1>User Journeys for Custom Knowledge-Based Code Helper</h1>
+    <p class="lead">An infographic-style view of how developers, client admins, central SaaS admins, support, billing, and investors experience the MVP workflow.</p>
+  </header>
+
+  <main>
+    <div class="journey-map" aria-label="Journey overview">
+      <div class="map-card"><b>Developer</b><span>Ask coding questions, verify citations, view personal usage.</span></div>
+      <div class="map-card"><b>Client Admin</b><span>Upload knowledge, manage sources, review package and user-wise usage.</span></div>
+      <div class="map-card"><b>Provider Admin</b><span>Monitor client workspaces separately and support billing operations.</span></div>
+      <div class="map-card"><b>Support + Billing</b><span>Troubleshoot onboarding and reconcile usage-based packages.</span></div>
+    </div>
+
+    <section>
+      <h2>Primary Journeys</h2>
+      <p class="section-lead">The MVP should prove three core motions: developers get source-backed help, client admins control their workspace and usage, and the provider can operate a multi-tenant SaaS safely.</p>
+
+      <div class="journeys">
+        <article class="journey">
+          <div class="journey-head">
+            <span class="badge">1</span>
+            <div>
+              <h3>Client Developer</h3>
+              <p>Employee of a customer software firm using chat for coding and internal knowledge questions.</p>
+            </div>
+          </div>
+          <div class="steps">
+            <div class="step"><span class="num">1</span><p>Signs in and enters the correct client workspace.</p></div>
+            <div class="step"><span class="num">2</span><p>Asks a Python, PHP, .NET, architecture, debugging, testing, or DevOps question.</p></div>
+            <div class="step"><span class="num">3</span><p>Backend retrieves universal coding knowledge plus private chunks for that tenant only.</p></div>
+            <div class="step"><span class="num">4</span><p>Hosted LLM streams a code-aware answer with source citations.</p></div>
+            <div class="step"><span class="num">5</span><p>Tokens are recorded by developer, conversation, model, and tenant.</p></div>
+            <div class="step"><span class="num">6</span><p>Developer views personal usage and cannot see other users or tenants.</p></div>
+          </div>
+          <p class="outcome">Outcome: trusted coding help without cross-tenant exposure.</p>
+        </article>
+
+        <article class="journey">
+          <div class="journey-head">
+            <span class="badge green">2</span>
+            <div>
+              <h3>Client Admin</h3>
+              <p>Engineering manager, tech lead, CTO, or workspace administrator for a client company.</p>
+            </div>
+          </div>
+          <div class="steps">
+            <div class="step"><span class="num">1</span><p>Signs in and enters the client workspace.</p></div>
+            <div class="step"><span class="num">2</span><p>Uploads docs, repository ZIP files, standards, runbooks, and source files.</p></div>
+            <div class="step"><span class="num">3</span><p>Ingestion stores files, chunks content, creates embeddings, and writes Qdrant/PostgreSQL metadata.</p></div>
+            <div class="step"><span class="num">4</span><p>Reviews sources and removes stale or incorrect items.</p></div>
+            <div class="step"><span class="num">5</span><p>Views tenant usage, package limits, and individual user-wise token usage.</p></div>
+            <div class="step"><span class="num">6</span><p>Uses billing-ready data to understand package fit.</p></div>
+          </div>
+          <p class="outcome">Outcome: client controls private knowledge and team usage.</p>
+        </article>
+
+        <article class="journey">
+          <div class="journey-head">
+            <span class="badge gold">3</span>
+            <div>
+              <h3>Central SaaS Admin</h3>
+              <p>Internal provider operator supporting the SaaS business across all clients.</p>
+            </div>
+          </div>
+          <div class="steps">
+            <div class="step"><span class="num">1</span><p>Signs in to the provider admin console.</p></div>
+            <div class="step"><span class="num">2</span><p>Views client workspaces separately with tenant ID, package, usage, ingestion, and health status.</p></div>
+            <div class="step"><span class="num">3</span><p>Identifies accounts near package limits or with unusual usage.</p></div>
+            <div class="step"><span class="num">4</span><p>Reviews operational metadata, job errors, logs, and billing-ready usage records.</p></div>
+            <div class="step"><span class="num">5</span><p>Supports failed uploads, blocked ingestion, and package-limit questions.</p></div>
+            <div class="step"><span class="num">6</span><p>Cannot retrieve another client's private knowledge through normal chat workflows.</p></div>
+          </div>
+          <p class="outcome">Outcome: provider can operate SaaS without breaking tenant boundaries.</p>
+        </article>
+
+        <article class="journey">
+          <div class="journey-head">
+            <span class="badge red">4</span>
+            <div>
+              <h3>Support and Billing</h3>
+              <p>Operational users who keep onboarding smooth and billing explainable.</p>
+            </div>
+          </div>
+          <div class="steps">
+            <div class="step"><span class="num">1</span><p>Support selects the correct tenant after a client request.</p></div>
+            <div class="step"><span class="num">2</span><p>Reviews ingestion status, source count, job errors, and log events.</p></div>
+            <div class="step"><span class="num">3</span><p>Guides client admin to retry upload, delete stale sources, or check limits.</p></div>
+            <div class="step"><span class="num">4</span><p>Billing reviews package level, tenant tokens, user-wise usage, and overage.</p></div>
+            <div class="step"><span class="num">5</span><p>Exports usage data for manual invoice or future Stripe reconciliation.</p></div>
+            <div class="step"><span class="num">6</span><p>Flags unusual usage spikes for support or product review.</p></div>
+          </div>
+          <p class="outcome">Outcome: onboarding and billing remain operationally credible.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Demo and Validation Journeys</h2>
+      <div class="trace-grid">
+        <div class="trace"><b>Founder/Product Operator</b><span>Selects a demo workspace, uploads safe sample code, asks representative questions, shows citations and usage, then turns evidence into roadmap or investor updates.</span></div>
+        <div class="trace"><b>Investor Reviewer</b><span>Sees login, workspace isolation, upload, chat, citation, usage metering, and admin reporting to validate that this is a SaaS workflow.</span></div>
+        <div class="trace"><b>Design Partner</b><span>Tests whether the product answers real onboarding, debugging, architecture, and internal documentation questions from approved customer data.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Role Permission Matrix</h2>
+      <div class="matrix">
+        <table>
+          <thead>
+            <tr><th>Capability</th><th>Developer</th><th>Client Admin</th><th>Central Admin</th><th>Support/CS</th><th>Billing</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sign in</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>Use chat</td><td>Yes</td><td>Yes</td><td>No by default</td><td>No by default</td><td>No</td></tr>
+            <tr><td>View own usage</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>View tenant usage</td><td>No</td><td>Own tenant only</td><td>All tenants summary</td><td>Assigned tenants summary</td><td>Billing summary</td></tr>
+            <tr><td>Upload sources</td><td>No by default</td><td>Yes</td><td>No by default</td><td>No by default</td><td>No</td></tr>
+            <tr><td>View private retrieved content</td><td>Own tenant only</td><td>Own tenant only</td><td>No by default</td><td>No by default</td><td>No</td></tr>
+            <tr><td>Export billing data</td><td>No</td><td>Own tenant summary</td><td>Yes</td><td>No by default</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Feature Traceability</h2>
+      <div class="trace-grid">
+        <div class="trace"><b>Chat + citations</b><span>Developer, client admin validation, founder demo, investor review.</span></div>
+        <div class="trace"><b>RAG ingestion</b><span>Client admin, support, founder demo, design partner validation.</span></div>
+        <div class="trace"><b>Token tracking</b><span>Developer usage, client admin reporting, central admin monitoring, billing.</span></div>
+        <div class="trace"><b>Central console</b><span>Provider admin, support, billing, founder/product operator.</span></div>
+        <div class="trace"><b>Guardrails</b><span>All journeys depend on tenant isolation and controlled access.</span></div>
+        <div class="trace"><b>Logs/monitoring</b><span>Central admin, support, product operator, incident review.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Source aligned with docs/mvp-user-journeys.md and docs/custom-knowledge-code-helper-business-plan.md.
+  </footer>
+</body>
+</html>

@@ -186,6 +186,92 @@ RAG pipeline:
 13. Chat retrieval fetches universal coding knowledge plus tenant-specific private chunks.
 14. LLM receives retrieved context and generates cited answer.
 
+### End-to-End MVP RAG and Chat Sequence
+
+Diagram source file: `../diagrams/08-end-to-end-mvp-rag-sequence.mmd`
+
+This sequence shows the full MVP path from client admin onboarding and source upload to developer chat, retrieval, cited answer generation, usage tracking, and admin monitoring.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor ClientAdmin as Client Admin
+    actor Developer as Developer
+    participant Web as Web App
+    participant API as Backend API
+    participant PG as PostgreSQL
+    participant S3 as Object Storage
+    participant Queue as Redis or SQS Queue
+    participant Worker as Ingestion Worker
+    participant Embed as Embedding Model
+    participant Qdrant as Shared Qdrant
+    participant LLM as Hosted LLM API
+    participant Usage as Usage and Billing Records
+    participant Central as Central SaaS Admin
+
+    ClientAdmin->>Web: Sign in
+    Web->>API: Authenticate user
+    API->>PG: Validate user, tenant, and role
+    PG-->>API: Client admin session context
+    API-->>Web: Authenticated workspace
+
+    ClientAdmin->>Web: Upload docs or repo ZIP
+    Web->>API: Send upload request with tenant context
+    API->>PG: Create source and ingestion job records
+    API->>S3: Store uploaded source file
+    API->>Queue: Enqueue ingestion job
+    API-->>Web: Upload accepted and processing
+
+    Worker->>Queue: Pull ingestion job
+    Worker->>PG: Load tenant, source, and job metadata
+    Worker->>S3: Download uploaded source file
+    Worker->>Worker: Filter files and detect obvious secrets
+    Worker->>Worker: Parse docs and code
+    Worker->>Worker: Create code-aware chunks
+    Worker->>Embed: Create embeddings for chunks
+    Embed-->>Worker: Embedding vectors
+    Worker->>Qdrant: Upsert vectors with tenant metadata
+    Worker->>PG: Store source, chunk, and job status metadata
+    PG-->>Web: Source status available for admin dashboard
+
+    Developer->>Web: Sign in
+    Web->>API: Authenticate user
+    API->>PG: Validate user, tenant, and role
+    PG-->>API: Developer session context
+    API-->>Web: Authenticated workspace
+
+    Developer->>Web: Ask coding or internal knowledge question
+    Web->>API: Send chat message with tenant context
+    API->>PG: Store user message and conversation metadata
+    API->>Qdrant: Retrieve universal coding knowledge
+    API->>Qdrant: Retrieve private chunks with tenant filter
+    Qdrant-->>API: Relevant chunks and source metadata
+    API->>LLM: Send prompt with question and retrieved context
+    LLM-->>API: Stream answer tokens
+    API-->>Web: Stream answer with code-aware Markdown
+    API->>PG: Store assistant response and source citations
+    API->>Usage: Store input and output token usage
+    Usage->>PG: Persist usage by user, tenant, model, and conversation
+
+    Developer->>Web: View personal usage
+    Web->>API: Request personal usage summary
+    API->>PG: Query usage for current user and tenant
+    PG-->>API: Personal usage only
+    API-->>Web: Personal usage summary
+
+    ClientAdmin->>Web: View tenant and user-wise usage
+    Web->>API: Request client admin usage dashboard
+    API->>PG: Query own-tenant usage and package limits
+    PG-->>API: Tenant usage and user-wise usage
+    API-->>Web: Client admin dashboard
+
+    Central->>Web: Monitor client workspaces
+    Web->>API: Request central SaaS admin overview
+    API->>PG: Query tenant summaries and operational metadata
+    PG-->>API: Workspace usage, package, and ingestion status
+    API-->>Web: Central SaaS admin console
+```
+
 RAG/MLOps deliverables:
 
 | Deliverable | MVP Requirement |

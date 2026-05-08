@@ -621,7 +621,7 @@
         <p class="eyebrow">Investor business proposal</p>
         <h1>CodeMind SaaS</h1>
         <p class="hero-copy">
-          A secure custom knowledge-based AI code assistant for small and mid-sized engineering teams that need faster onboarding, better code understanding, safer internal Q&A, and practical DevOps support.
+          A secure custom knowledge-based AI code assistant for small and mid-sized engineering teams that need faster onboarding, better code understanding, safer internal Q&A, and practical Python, PHP, .NET, and DevOps support.
         </p>
         <div class="hero-actions">
           <a class="button" href="#ask">
@@ -666,7 +666,7 @@
     <section id="opportunity">
       <h2>Executive Summary</h2>
       <p class="section-lead">
-        CodeMind SaaS is positioned as an affordable, secure AI coding assistant for SME engineering teams. It connects to a company's private repositories, documentation, runbooks, and coding standards so developers can ask questions and receive grounded answers with source context.
+        CodeMind SaaS is positioned as an affordable, secure AI coding assistant for SME engineering teams. Each client receives a tenant-isolated SaaS workspace with admin users, developer users, private knowledge, package limits, and usage tracking. The product connects to a company's private repositories, documentation, runbooks, and coding standards so developers can ask Python, PHP, .NET, architecture, and DevOps questions with grounded source context.
       </p>
 
       <div class="business-case">
@@ -687,14 +687,14 @@
           <span class="label">Solution</span>
           <h3>A private knowledge-based code helper</h3>
           <p>
-            The assistant answers from each customer's own technical knowledge base using RAG, vector search, tenant isolation, source citations, and usage-based billing. The MVP uses hosted LLM APIs to launch quickly without expensive model training.
+            The assistant answers by combining a centrally maintained universal coding knowledge base with each customer's private technical knowledge base using RAG, vector search, tenant isolation, source citations, and usage-based billing. The MVP uses hosted LLM APIs to launch quickly without expensive per-client model training.
           </p>
           <div class="solution-flow" aria-label="Product flow">
             <div class="flow-step"><b>Connect</b><span>Docs, code files, and repo snapshots</span></div>
-            <div class="flow-step"><b>Index</b><span>Chunk and store private knowledge</span></div>
+            <div class="flow-step"><b>Index</b><span>Store universal and private knowledge</span></div>
             <div class="flow-step"><b>Ask</b><span>Developers use chat for answers</span></div>
             <div class="flow-step"><b>Ground</b><span>Retrieve source-backed context</span></div>
-            <div class="flow-step"><b>Bill</b><span>Track tokens and usage by tenant</span></div>
+            <div class="flow-step"><b>Bill</b><span>Track usage by tenant and user</span></div>
           </div>
         </article>
       </div>
@@ -714,7 +714,7 @@
         <article class="card">
           <span class="label">Expansion</span>
           <h3>SaaS and DevOps teams</h3>
-          <p>Python, backend, CI/CD, Kubernetes, runbook, and debugging support across operational workflows.</p>
+          <p>Python, PHP, .NET, backend, CI/CD, Kubernetes, runbook, and debugging support across operational workflows.</p>
         </article>
         <article class="card">
           <span class="label">Later stage</span>
@@ -731,6 +731,18 @@
       </p>
 
       <div class="grid two">
+        <article class="card">
+          <h3>Client-Wise SaaS Design</h3>
+          <p>Each software firm gets a tenant-isolated workspace with admin accounts, user accounts, private sources, package limits, and billing records. Client admins can review tenant usage and individual user-wise usage, while each developer can see only personal usage.</p>
+        </article>
+
+        <article class="card">
+          <h3>RAG Isolation Strategy</h3>
+          <p>The MVP should use one shared Qdrant cluster with strict tenant filters, a shared universal coding knowledge collection, and tenant-specific private knowledge records. Larger clients can later receive a dedicated collection, dedicated cluster, VPC, or private deployment.</p>
+        </article>
+      </div>
+
+      <div class="grid two" style="margin-top: 22px;">
         <article class="card">
           <h3>Suggested Pricing</h3>
           <table>
@@ -760,7 +772,7 @@
               <tr>
                 <td>Business</td>
                 <td class="number">$499-$1,999/month</td>
-                <td>Private knowledge base and higher usage</td>
+                <td>Private knowledge base, higher usage, and admin reporting</td>
               </tr>
               <tr>
                 <td>Enterprise</td>
@@ -810,7 +822,7 @@
         <article class="card phase">
           <span class="label">MVP</span>
           <h3>10-12 weeks</h3>
-          <p>Hosted LLM, Qdrant RAG, SaaS chat, source citations, tenant isolation, admin dashboard, and usage metering.</p>
+          <p>Hosted LLM, shared Qdrant RAG with tenant filters, SaaS chat, source citations, Python/PHP/.NET support, admin dashboard, and user-wise usage metering.</p>
           <ul>
             <li>4-6 person team</li>
             <li>$20k-$70k human cost estimate</li>
@@ -821,7 +833,7 @@
         <article class="card phase">
           <span class="label">Phase 1</span>
           <h3>4-6 months after MVP</h3>
-          <p>Paid pilot product with GitHub integration, billing, team management, advanced RAG, model routing, and analytics.</p>
+          <p>Paid pilot product with GitHub integration, billing, team management, advanced RAG, model routing, analytics, and optional dedicated Qdrant collections for larger clients.</p>
           <ul>
             <li>8-12 person team</li>
             <li>$150k-$300k build and operational investment</li>
@@ -910,7 +922,7 @@
     <section>
       <h2>Go-To-Market Plan</h2>
       <p class="section-lead">
-        The initial motion should be founder-led and community-driven, targeting teams that already feel pain around private repository understanding, onboarding, Python support, and DevOps documentation.
+        The initial motion should be founder-led and community-driven, targeting teams that already feel pain around private repository understanding, onboarding, Python, PHP, .NET, and DevOps documentation.
       </p>
 
       <div class="timeline" aria-label="Go-to-market timeline">
@@ -953,7 +965,7 @@
         <article class="card">
           <h3>Commercial Risks</h3>
           <ul class="clean-list">
-            <li><b>Weak differentiation:</b> focus on private codebase Q&A, Python, DevOps, and internal documentation.</li>
+            <li><b>Weak differentiation:</b> focus on private codebase Q&A, Python, PHP, .NET, DevOps, and internal documentation.</li>
             <li><b>Enterprise trust gap:</b> build audit logs, access controls, and private deployment roadmap.</li>
             <li><b>Customer adoption risk:</b> start with design partners and prove recurring usage before heavy infrastructure investment.</li>
           </ul>
@@ -963,7 +975,7 @@
           <ul class="clean-list">
             <li><b>LLM cost too high:</b> use model routing, caching, token caps, and usage-based billing.</li>
             <li><b>Hallucination:</b> use RAG citations and source-first answer patterns.</li>
-            <li><b>Data leakage:</b> enforce tenant isolation, access control, and deletion workflows.</li>
+            <li><b>Data leakage:</b> enforce tenant isolation, backend retrieval filters, access control, and deletion workflows.</li>
           </ul>
         </article>
       </div>
@@ -1014,7 +1026,7 @@
       <h2>Final Recommendation</h2>
       <div class="card">
         <p>
-          The best path is to prove business value before investing in heavy model infrastructure. Start with a hosted LLM, Qdrant-based RAG, SaaS chat, source citations, tenant isolation, and token usage tracking. Do not start by training a 70B or 79B model. Investors will care most about whether teams get useful answers from their own private knowledge, whether they pay monthly for it, and whether the system can deliver those answers at acceptable cost.
+          The best path is to prove business value before investing in heavy model infrastructure. Start with a hosted LLM, a shared Qdrant cluster with strict tenant filters, a universal coding knowledge base, tenant-specific private RAG, SaaS chat, source citations, Python/PHP/.NET support, admin and user usage tracking, and token package billing. Do not start by training a 70B or 79B model or by creating separate infrastructure for every client. Investors will care most about whether teams get useful answers from their own private knowledge, whether they pay monthly for it, and whether the system can deliver those answers at acceptable cost.
         </p>
       </div>
     </section>

@@ -42,13 +42,25 @@
 
 ### One-Line Pitch
 
-A secure AI coding assistant for engineering teams that understands their private codebase, official documentation, internal standards, and DevOps workflows, then provides accurate code help through chat.
+A secure AI coding assistant for engineering teams that understands their private codebase, organization-specific documentation, shared coding knowledge, internal standards, and DevOps workflows, then provides accurate code help through chat.
 
 ### Investor Pitch
 
 Modern engineering teams waste significant time searching documentation, debugging code, onboarding developers, reviewing pull requests, and understanding legacy systems. General AI chatbots are useful, but they do not deeply understand a company's private repositories, internal standards, framework versions, or operational context.
 
-This product solves that gap by offering a custom knowledge-based code helper where each client can connect their own code repositories, documentation, runbooks, tickets, and engineering standards. The AI assistant answers from that private knowledge base using retrieval augmented generation (RAG), with optional Model Context Protocol (MCP) and tool integrations for GitHub, CI logs, documentation lookup, and controlled external access.
+This product solves that gap by offering a custom knowledge-based code helper where each client receives a tenant-isolated SaaS workspace and can connect their own code repositories, documentation, runbooks, tickets, and engineering standards. The AI assistant answers by combining a shared universal coding knowledge base with the client's private organization knowledge using retrieval augmented generation (RAG), with optional Model Context Protocol (MCP) and tool integrations for GitHub, CI logs, documentation lookup, and controlled external access.
+
+### Core Product Objective
+
+The company will sell a client-wise SaaS coding assistant to software firms. Each client gets its own workspace, admin users, developer users, private knowledge base, usage tracking, and billing package. Developers use a chat window for coding, debugging, architecture, documentation, and DevOps questions. Admins manage sources and users, see user-wise usage, and control package limits. Individual users can see only their own personal usage.
+
+The MVP should be positioned as an LLM plus RAG product, not as a separate custom-trained model for every client. The product can later support self-hosted models, fine-tuning, or dedicated infrastructure for enterprise customers, but the scalable starting point is:
+
+- One strong code-capable LLM or model router
+- One centrally maintained universal coding knowledge base
+- One private tenant-isolated knowledge base per client
+- Usage tracking by tenant and by individual user
+- Package-based SaaS billing with token limits and overage options
 
 ## 2. Business Case and Feasibility
 
@@ -68,10 +80,12 @@ Engineering teams face recurring productivity and quality challenges:
 
 ### Solution
 
-The product is a private SaaS code assistant that can answer questions such as:
+The product is a private SaaS code assistant that can answer questions across Python, PHP, .NET, backend services, and DevOps workflows, such as:
 
 - How does this service work?
 - Why is this Python error happening?
+- Why is this PHP/Laravel error happening?
+- Explain this C#/.NET service class.
 - Where is authentication handled in this repository?
 - Generate a `pytest` test for this function.
 - Review this FastAPI endpoint.
@@ -84,7 +98,7 @@ The product is a private SaaS code assistant that can answer questions such as:
 | Segment | Need |
 | --- | --- |
 | Small software companies | Affordable AI code helper |
-| DevOps and MLOps teams | Infrastructure, Python, and automation support |
+| DevOps and MLOps teams | Infrastructure, Python, PHP, .NET, and automation support |
 | SaaS product teams | Private repository Q&A |
 | Training companies | Student coding assistant |
 | Enterprise engineering teams | Secure internal knowledge assistant |
@@ -97,6 +111,7 @@ The product does not need to start by training a 70B or 79B parameter model from
 - Existing hosted LLM APIs or hosted code models
 - RAG using Qdrant
 - Private repository and document ingestion
+- Shared universal coding knowledge plus client-specific private knowledge
 - Token metering
 - SaaS dashboard and admin workflows
 
@@ -119,9 +134,11 @@ Usage-based billing is a common SaaS pricing pattern where customers are charged
 | Test generation | Generates `pytest` and unit test examples |
 | Code review | Reviews snippets or pull request changes |
 | Docs Q&A | Answers from official and client-specific documentation |
+| Universal coding knowledge | Uses a centrally maintained coding manual and public best-practice knowledge base |
 | Tenant isolation | Keeps each client knowledge base separate |
 | Billing | Tracks token usage for SaaS billing |
-| Admin portal | Manages users, repositories, sources, and usage |
+| Admin portal | Manages users, repositories, sources, package limits, and user-wise usage |
+| User portal | Lets individual users view only their own usage and conversation history |
 | MCP/tools | Provides controlled GitHub, documentation, and CI access |
 
 ## 4. Technical Architecture
@@ -135,7 +152,7 @@ The LLM should not be treated as the only knowledge source. The LLM is the reaso
 | Component | Purpose |
 | --- | --- |
 | LLM | Reasoning and answer generation engine |
-| Qdrant/vector DB | RAG knowledge retrieval layer |
+| Qdrant/vector DB | Shared RAG retrieval layer with tenant-aware isolation |
 | PostgreSQL | Users, tenants, billing, metadata, and conversations |
 | Object storage | Uploaded documents, repository snapshots, and source files |
 | Redis/queue | Async ingestion and background jobs |
@@ -143,6 +160,26 @@ The LLM should not be treated as the only knowledge source. The LLM is the reaso
 | Billing engine | Token usage, plan limits, and invoices |
 
 Qdrant is suitable for vector similarity search and semantic retrieval. Qdrant Cloud can support early experimentation with a free tier before scaling to paid clusters. Actual production cost should be verified against the selected region, usage pattern, and service plan before investor submission.
+
+### RAG Database and Tenant Isolation Strategy
+
+The recommended design is a shared Qdrant cluster with strong tenant isolation, rather than a separate database for every client during the MVP. This keeps infrastructure cost low while still supporting client-wise SaaS packaging.
+
+Recommended structure:
+
+- A shared universal coding knowledge collection for common coding manuals, public best practices, framework guidance, and general engineering knowledge.
+- Tenant-isolated client knowledge stored with strict `tenant_id`, `workspace_id`, `source_id`, language, repository, and access metadata.
+- Retrieval filters enforced by the backend so a user can retrieve only universal knowledge plus private knowledge belonging to that user's own tenant.
+- Per-user and per-tenant usage records stored in PostgreSQL for admin reporting, user self-service usage views, package limits, and billing.
+- Larger clients can move to a dedicated collection, dedicated Qdrant cluster, or private deployment in Phase 1 or Phase 2 when compliance, scale, or contract value justifies it.
+
+This gives the product a practical upgrade path:
+
+| Stage | RAG DB Design |
+| --- | --- |
+| MVP | Shared Qdrant cluster with strict tenant filters and a shared universal coding knowledge collection |
+| Phase 1 | Shared production cluster with stronger tenant controls; optionally one collection for larger clients |
+| Phase 2 | Dedicated Qdrant cluster, VPC, or private deployment for enterprise and regulated clients |
 
 ## 5. Architecture Diagram
 
@@ -155,7 +192,7 @@ flowchart LR
     API --> Auth[Auth and Tenant Guard]
     API --> Chat[Chat Orchestrator]
     Chat --> Retrieve[RAG Retrieval]
-    Retrieve --> Qdrant[Qdrant Vector DB]
+    Retrieve --> Qdrant[Shared Qdrant with Tenant Filters]
     Retrieve --> Postgres[PostgreSQL Metadata]
     Chat --> LLM[Hosted LLM API]
     API --> Usage[Token Usage Metering]
@@ -225,7 +262,7 @@ For the MVP, GPU can be avoided by using a hosted LLM API. This keeps CapEx low 
 For MVP:
 
 - Use an API-based LLM
-- Use Qdrant Cloud or a small self-hosted Qdrant deployment
+- Use Qdrant Cloud or a small self-hosted Qdrant deployment as a shared cluster with strict tenant filters
 - Use CPU servers for backend services
 - Use managed PostgreSQL
 
@@ -237,7 +274,7 @@ For Phase 1, use a hybrid model:
 
 - API LLM for best answer quality
 - Optional self-hosted open-source code model for cost control
-- Qdrant production cluster
+- Shared Qdrant production cluster with stronger tenant controls and optional dedicated collections for larger clients
 - Separate ingestion workers
 
 ### Best Phase 2 Approach
@@ -246,7 +283,7 @@ For Phase 2:
 
 - Self-host model serving using vLLM
 - Add GPU autoscaling
-- Support dedicated tenant isolation
+- Support dedicated tenant collections, clusters, or private RAG infrastructure
 - Offer enterprise or private deployment
 - Consider optional fine-tuned models
 
@@ -261,7 +298,7 @@ Recommended MVP architecture:
 - Frontend: Vercel or Cloudflare Pages
 - Backend: 1-2 CPU VMs or container service
 - Database: Managed PostgreSQL
-- Vector DB: Qdrant Cloud free or small paid tier
+- Vector DB: Shared Qdrant Cloud free or small paid tier with tenant filters
 - LLM: Hosted API
 - Object storage: S3-compatible bucket
 - Queue: Redis or managed queue
@@ -273,7 +310,7 @@ Recommended MVP architecture:
 | Backend API | 2-4 vCPU, 8-16 GB RAM |
 | Worker | 2-4 vCPU, 8-16 GB RAM |
 | PostgreSQL | 2 vCPU, 4-8 GB RAM |
-| Qdrant | Free or small managed cluster |
+| Qdrant | Free or small managed shared cluster with tenant filtering |
 | Redis | 1-2 GB RAM |
 | GPU | Not required |
 
@@ -287,7 +324,7 @@ These are approximate monthly cloud resource costs for early MVP operation. They
 | Backend API compute | $100-$250 | Small VM, container service, or app platform |
 | Ingestion worker compute | $50-$200 | Can run as a small worker or scheduled job initially |
 | Managed PostgreSQL | $50-$200 | Small managed database instance |
-| Qdrant vector database | $0-$150 | Free or small managed cluster for early usage |
+| Qdrant vector database | $0-$150 | Free or small managed shared cluster for early usage |
 | Redis/queue | $20-$100 | Managed Redis or lightweight queue service |
 | Object storage | $10-$100 | S3-compatible storage for uploads and repo snapshots |
 | Logging and basic monitoring | $50-$200 | Cloud-native logs or lightweight Grafana/Prometheus setup |
@@ -301,7 +338,7 @@ These are approximate monthly cloud resource costs for early MVP operation. They
 | Backend | 2-3 replicas, 4 vCPU and 16 GB RAM each |
 | Workers | 2-4 workers, 4-8 vCPU each |
 | PostgreSQL | Managed medium instance |
-| Qdrant | Dedicated cluster |
+| Qdrant | Shared production cluster; optional dedicated collection for larger clients |
 | Redis | Managed Redis |
 | LLM | API plus optional small self-hosted model |
 | GPU | Optional NVIDIA L4 class |
@@ -317,7 +354,7 @@ Phase 1 costs increase because the platform needs stronger production isolation,
 | Backend service replicas | $500-$1,500 | Multiple replicas for production reliability |
 | Ingestion worker pool | $400-$1,600 | More parallel indexing and embedding jobs |
 | Managed PostgreSQL | $500-$2,000 | Medium production database with backups |
-| Qdrant production cluster | $200-$1,000+ | Dedicated or larger managed cluster |
+| Qdrant production cluster | $200-$1,000+ | Shared production cluster, with optional dedicated collections for larger clients |
 | Managed Redis/queue | $100-$500 | Production queue and cache |
 | Object storage and transfer | $100-$500 | Repository snapshots, documents, and exports |
 | Dev/staging/prod environments | $500-$2,000 | Separate environments for release safety |
@@ -331,7 +368,7 @@ Phase 1 costs increase because the platform needs stronger production isolation,
 | Component | Estimated Resource |
 | --- | --- |
 | LLM serving | GPU nodes with L4, A10, or H100 depending on model and workload |
-| RAG DB | Highly available Qdrant cluster |
+| RAG DB | Highly available Qdrant cluster, with dedicated enterprise options |
 | Backend | Kubernetes autoscaling |
 | Ingestion | Separate worker pool |
 | Fine-tuning | Dedicated GPU jobs |
@@ -368,6 +405,8 @@ Reasons:
 - Faster MVP launch
 - Better quality from day one
 - Easier token metering
+
+The MVP should support Python first, then add PHP and .NET as additional supported languages through parsing, chunking, prompts, and curated universal knowledge. This does not require separate model training for each language. It mainly adds ingestion test cases, language-aware chunking rules, framework examples, and evaluation questions for Python, PHP/Laravel, and C#/.NET.
 
 Example cost logic: public pricing for major LLM providers changes frequently and should be verified immediately before investor submission. For cost-sensitive workloads, model routing is important: simple questions can go to a cheaper model, while complex code debugging or architecture tasks can go to a stronger model.
 
@@ -525,7 +564,7 @@ GPU cost can become the biggest cost driver. Third-party cloud pricing trackers 
 | Free/Trial | $0 | Limited tokens, public docs only |
 | Developer Pro | $19-$49/user | Personal usage, small repository |
 | Team | $99-$299/team | Shared workspace, repository ingestion |
-| Business | $499-$1,999/month | More tokens, private knowledge base |
+| Business | $499-$1,999/month | More tokens, private knowledge base, admin usage reporting |
 | Enterprise | Custom | SSO, audit logs, private deployment |
 
 ### Usage-Based Add-Ons
@@ -563,11 +602,13 @@ Assumptions:
 | Workspace/tenant | Each client has its own workspace |
 | Chat interface | Streaming AI answers |
 | Code-aware Markdown | Syntax-highlighted code blocks |
+| MVP language coverage | Python, PHP, and .NET code assistance through prompts, parsing, and RAG evaluation |
 | RAG ingestion | Upload documents and repository files |
-| Qdrant search | Retrieve relevant chunks |
+| Qdrant search | Retrieve universal coding knowledge plus tenant-specific private chunks |
 | Source citation | Show where answer came from |
 | Token tracking | Track input and output tokens |
-| Admin panel | View usage and sources |
+| Admin panel | View sources, package limits, tenant usage, and individual user-wise usage |
+| User usage view | Each user can view only their own token and conversation usage |
 | Basic billing-ready data | Store usage for future billing |
 | Guardrails | Prevent cross-tenant leakage |
 | Logs/monitoring | Basic observability |
@@ -589,6 +630,7 @@ Assumptions:
 - Cloud-based SaaS
 - Single region
 - Multi-tenant but logically isolated
+- Shared Qdrant cluster with tenant filters for MVP
 - API LLM-based
 - Managed vector database and database where possible
 
@@ -603,7 +645,7 @@ flowchart LR
     API --> PG[Managed PostgreSQL]
     API --> Redis[Managed Redis]
     API --> S3[S3 Compatible Storage]
-    API --> Qdrant[Qdrant Cloud]
+    API --> Qdrant[Shared Qdrant Tenant Filters]
     API --> LLM[Hosted LLM API]
     API --> Monitor[Logs and Metrics]
     Worker[Ingestion Worker] --> Redis
@@ -625,7 +667,7 @@ flowchart LR
 | Frontend | Vercel or Cloudflare Pages |
 | Backend | Docker with ECS/Fargate, Render, Railway, or Kubernetes later |
 | Database | Managed PostgreSQL |
-| Vector DB | Qdrant Cloud |
+| Vector DB | Shared Qdrant Cloud with tenant filters |
 | Object storage | S3-compatible storage |
 | CI/CD | GitHub Actions |
 | Monitoring | Grafana/Prometheus or cloud monitoring |
@@ -645,9 +687,9 @@ Assumption: 2-week sprints.
 | --- | --- | --- |
 | Sprint 0 | 1 week | Product discovery and architecture |
 | Sprint 1 | 2 weeks | Auth, tenant, and base chat UI |
-| Sprint 2 | 2 weeks | LLM integration and streaming |
-| Sprint 3 | 2 weeks | RAG ingestion and Qdrant retrieval |
-| Sprint 4 | 2 weeks | Admin, usage metering, and security |
+| Sprint 2 | 2 weeks | LLM integration, streaming, and initial Python/PHP/.NET prompt support |
+| Sprint 3 | 2 weeks | RAG ingestion, shared Qdrant tenant retrieval, and language-aware chunking |
+| Sprint 4 | 2 weeks | Admin, per-user usage metering, package limits, and security |
 | Sprint 5 | 2 weeks | Pilot readiness, QA, and deployment |
 | Buffer | 1 week | Fixes and investor demo polish |
 
@@ -655,13 +697,14 @@ Assumption: 2-week sprints.
 
 ### User Story 1: Developer Chat
 
-As a developer, I want to ask a Python question in chat so that I can get code help quickly.
+As a developer, I want to ask a Python, PHP, or .NET question in chat so that I can get code help quickly.
 
 Acceptance criteria:
 
 - User can submit a question.
 - Answer streams in the UI.
 - Code blocks are formatted.
+- MVP supports Python, PHP, and .NET examples.
 - Conversation history is saved.
 
 ### User Story 2: Upload Knowledge
@@ -683,12 +726,13 @@ As a developer, I want to ask questions about my project codebase so that I can 
 Acceptance criteria:
 
 - Assistant retrieves only tenant-specific code.
+- Assistant can also retrieve shared universal coding knowledge.
 - Answer cites matching files and chunks.
 - No cross-tenant retrieval occurs.
 
 ### User Story 4: Token Usage
 
-As a SaaS admin, I want to track token usage by tenant so that I can bill customers correctly.
+As a SaaS admin, I want to track token usage by tenant and by individual user so that I can bill customers correctly and show client admins their team usage.
 
 Acceptance criteria:
 
@@ -697,6 +741,8 @@ Acceptance criteria:
 - Model name is stored.
 - Conversation ID is stored.
 - Tenant usage report is available.
+- User-wise usage report is available to the client admin.
+- Individual users can view only their own personal usage.
 
 ### User Story 5: Admin Knowledge Management
 
@@ -729,6 +775,7 @@ Convert MVP into a paid pilot-ready product.
 | Security | Audit logs and secret detection |
 | Model routing | Lower-cost and stronger model selection |
 | Admin analytics | Usage dashboard |
+| Tenant scaling | Optional dedicated Qdrant collections for larger clients |
 | Feedback loop | Thumbs up/down and answer rating |
 | Prompt evaluation | Regression tests for answer quality |
 | MCP beta | GitHub, documentation, and CI connector |
@@ -745,7 +792,7 @@ flowchart LR
     Router --> Cheap[Lower Cost LLM]
     Router --> Strong[Advanced Code LLM]
     App --> RAG[Hybrid RAG Service]
-    RAG --> Qdrant[Dedicated Qdrant Cluster]
+    RAG --> Qdrant[Shared Qdrant or Large Client Collections]
     RAG --> PG[Managed PostgreSQL]
     App --> Billing[Stripe Billing]
     App --> Audit[Audit Logs]
@@ -834,7 +881,7 @@ flowchart TD
 ### Initial Customer Acquisition Channels
 
 - LinkedIn technical content
-- DevOps and Python communities
+- DevOps, Python, PHP, and .NET communities
 - MLOps communities
 - GitHub Marketplace later
 - Partnerships with training centers
@@ -932,7 +979,7 @@ flowchart TD
 | --- | --- |
 | Chunking strategy | Code-aware chunking |
 | Embeddings | Stored vectors |
-| Qdrant schema | Tenant-aware collections |
+| Qdrant schema | Shared cluster with tenant filters and optional large-client collections |
 | Retrieval | Top-k with metadata filtering |
 | Prompt template | RAG answer format |
 | Evaluation set | 50-100 test questions |
@@ -944,7 +991,7 @@ flowchart TD
 | File upload | PDF, Markdown, text, and code |
 | Repository ingestion | MVP can start with ZIP upload |
 | Queue worker | Async indexing |
-| Metadata tagging | Source, file, and tenant |
+| Metadata tagging | Source, file, language, user, workspace, and tenant |
 | Deletion | Remove stale chunks |
 
 ### Workstream 5: Infrastructure
@@ -989,7 +1036,7 @@ flowchart TD
 | Data leakage | Tenant isolation and access control |
 | Poor retrieval | Hybrid search and metadata filtering |
 | Slow ingestion | Queue workers and batch embeddings |
-| Weak differentiation | Focus on private codebase, DevOps, and Python workflows |
+| Weak differentiation | Focus on private codebase, DevOps, Python, PHP, and .NET workflows |
 | Enterprise trust gap | Audit logs and private deployment roadmap |
 | Competition | Niche focus and custom knowledge base |
 
@@ -1000,7 +1047,7 @@ flowchart TD
 | Frontend | Next.js / React |
 | Backend | FastAPI or NestJS |
 | Database | PostgreSQL |
-| Vector DB | Qdrant |
+| Vector DB | Shared Qdrant cluster with tenant filters |
 | Cache/Queue | Redis |
 | Object storage | S3-compatible storage |
 | LLM | Hosted API first |
@@ -1018,6 +1065,7 @@ flowchart TD
 - Tenant/workspace
 - Chat UI
 - LLM response
+- Python, PHP, and .NET MVP support
 - File upload
 - Embedding and Qdrant storage
 - RAG response
@@ -1069,9 +1117,9 @@ For MVP plus Phase 1, the company can ask for an estimated **$250k-$500k seed or
 
 ## 29. Final Investor Narrative
 
-We are building a secure custom knowledge-based AI code assistant for Python, DevOps, and backend engineering teams. Unlike general chatbots, our platform connects to a company's private repositories, documentation, runbooks, and coding standards. It uses RAG, vector search, controlled tool access, and LLM routing to provide accurate code help, debugging support, test generation, and onboarding assistance.
+We are building a secure custom knowledge-based AI code assistant for Python, PHP, .NET, DevOps, and backend engineering teams. Unlike general chatbots, our platform connects to a company's private repositories, documentation, runbooks, and coding standards. It uses a shared universal coding knowledge base, tenant-isolated private RAG, vector search, controlled tool access, and LLM routing to provide accurate code help, debugging support, test generation, and onboarding assistance.
 
-The MVP can be built in an estimated 10-12 weeks using existing LLM APIs and Qdrant. Phase 1 will add GitHub integration, billing, team management, analytics, and paid pilots. Phase 2 will expand to enterprise features such as SSO, audit logs, private deployment, self-hosted model serving, and IDE integrations.
+The MVP can be built in an estimated 10-12 weeks using existing LLM APIs and a shared Qdrant cluster with strict tenant filtering. Phase 1 will add GitHub integration, billing, team management, analytics, optional dedicated Qdrant collections for larger clients, and paid pilots. Phase 2 will expand to enterprise features such as SSO, audit logs, private deployment, self-hosted model serving, and IDE integrations.
 
 ## 30. Final Recommendation
 
@@ -1079,8 +1127,8 @@ The MVP can be built in an estimated 10-12 weeks using existing LLM APIs and Qdr
 
 | Phase | Recommendation |
 | --- | --- |
-| MVP | Hosted LLM plus Qdrant RAG, SaaS chat, and usage metering |
-| Phase 1 | Paid team product, GitHub integration, billing, and analytics |
+| MVP | Hosted LLM plus shared Qdrant RAG, SaaS chat, Python/PHP/.NET support, and usage metering |
+| Phase 1 | Paid team product, GitHub integration, billing, analytics, and optional larger-client Qdrant collections |
 | Phase 2 | Enterprise product, self-hosted LLM, private deployment, and IDE/PR automation |
 
 Do not start by training a 70B or 79B model.

@@ -4,7 +4,7 @@ flowchart LR
     API --> Auth[Auth and Tenant Guard]
     API --> Chat[Chat Orchestrator]
     Chat --> Retrieve[RAG Retrieval]
-    Retrieve --> Qdrant[Qdrant Vector DB]
+    Retrieve --> Qdrant[Shared Qdrant with Tenant Filters]
     Retrieve --> Postgres[PostgreSQL Metadata]
     Chat --> LLM[Hosted LLM API]
     API --> Usage[Token Usage Metering]

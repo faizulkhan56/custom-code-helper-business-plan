@@ -5,7 +5,7 @@ flowchart LR
     Router --> Cheap[Lower Cost LLM]
     Router --> Strong[Advanced Code LLM]
     App --> RAG[Hybrid RAG Service]
-    RAG --> Qdrant[Dedicated Qdrant Cluster]
+    RAG --> Qdrant[Shared Qdrant or Large Client Collections]
     RAG --> PG[Managed PostgreSQL]
     App --> Billing[Stripe Billing]
     App --> Audit[Audit Logs]

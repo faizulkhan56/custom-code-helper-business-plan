@@ -44,6 +44,173 @@ The delivery plan must stay aligned with this MVP feature list.
 
 ## 3. Team Structure and Ownership
 
+## 3A. MVP System Work Structure
+
+### Architecture Style Recommendation
+
+For the MVP, use a **modular monolith backend plus one separate worker service**, not a full microservice architecture.
+
+Reason:
+
+- The MVP team is small.
+- The feature set needs strong coordination across auth, tenant isolation, chat, RAG, usage, and admin reporting.
+- Microservices would add deployment, networking, observability, and data-consistency overhead too early.
+- The product can still be structured internally as clean modules so individual modules can be extracted later if scale requires it.
+
+Recommended MVP structure:
+
+| Layer | MVP Recommendation | Why |
+| --- | --- | --- |
+| Frontend | One web application | Supports developer portal, client admin, and central SaaS admin through role-based routes. |
+| Backend API | One modular monolith API | Faster delivery, simpler tenant enforcement, simpler deployment. |
+| Worker | One background worker service | Handles ingestion, chunking, embedding, Qdrant writes, and async jobs separately from API traffic. |
+| Data layer | Managed PostgreSQL, shared Qdrant, object storage, Redis/queue | Keeps storage responsibilities clear and scalable. |
+| LLM layer | Hosted LLM API | No GPU or self-hosted model infrastructure needed for MVP. |
+
+### Required Applications and Services
+
+The MVP should be built with **two deployable application services** plus managed infrastructure.
+
+| Unit | Type | Responsibility | Owner |
+| --- | --- | --- | --- |
+| `web-app` | Frontend application | Developer chat, personal usage, client admin dashboard, central SaaS admin console | Frontend Engineer |
+| `api-service` | Backend API application | Auth, tenants, roles, conversations, LLM calls, usage tracking, admin APIs, source APIs | Backend Engineer |
+| `worker-service` | Background worker | File parsing, chunking, embeddings, Qdrant upsert, deletion jobs, ingestion status | AI/RAG Engineer + Backend Engineer |
+| PostgreSQL | Managed database | Users, tenants, roles, conversations, messages, sources, usage, package limits, billing-ready records | Backend Engineer + DevOps |
+| Qdrant | Managed/shared vector DB | Universal coding knowledge and tenant-specific private vectors | AI/RAG Engineer |
+| Object storage | Managed storage | Uploaded docs, repository ZIPs, source snapshots | DevOps Engineer |
+| Redis/queue | Managed queue/cache | Ingestion job queue and lightweight background coordination | Backend Engineer + DevOps |
+| Hosted LLM API | External model API | Answer generation from prompts and retrieved context | AI/RAG Engineer + Backend Engineer |
+| Monitoring/logging | Managed/cloud-native | API logs, worker logs, ingestion failures, LLM errors, usage anomalies | DevOps Engineer |
+
+### Frontend Application Modules
+
+Use **one frontend application** with role-aware navigation.
+
+Recommended stack:
+
+- Next.js with React and TypeScript.
+- Tailwind CSS or a component library such as shadcn/ui.
+- Server-side or client-side auth integration depending on chosen auth provider.
+- Markdown/code rendering using a maintained Markdown renderer with syntax highlighting.
+
+Frontend modules:
+
+| Module | Screens |
+| --- | --- |
+| Auth | Login, signup, logout, session expiry |
+| Developer chat | Chat list, chat window, streaming response, cited answer, code blocks |
+| Personal usage | User token usage, conversation usage summary |
+| Client admin | Source upload, source list, ingestion status, source deletion |
+| Client usage admin | Tenant usage, package limit, user-wise token usage |
+| Central SaaS admin | Tenant list, package usage, ingestion health, billing-ready usage summary |
+| Shared UI | Role-aware layout, navigation, loading states, error states |
+
+### Backend API Modules
+
+Use **one backend API** organized as internal modules.
+
+Recommended stack:
+
+- **FastAPI with Python** if the team wants fastest alignment with AI/RAG work.
+- NestJS with TypeScript is also viable, but FastAPI is the recommended MVP choice because ingestion, embeddings, RAG evaluation, and AI tooling are usually easier in Python.
+- SQLAlchemy or SQLModel for ORM.
+- Alembic for migrations.
+- Pydantic for validation.
+- OpenAPI generated from FastAPI for frontend integration.
+
+Backend modules:
+
+| Module | Responsibility |
+| --- | --- |
+| Auth module | Login integration, session/JWT validation, current user context |
+| Tenant module | Workspaces, tenant membership, role resolution |
+| RBAC module | Developer, client admin, central SaaS admin permissions |
+| Conversation module | Chat sessions, messages, streaming response coordination |
+| LLM module | Hosted LLM API wrapper, prompt execution, token accounting |
+| Retrieval module | Universal plus tenant-specific Qdrant retrieval with filters |
+| Source module | Source records, upload metadata, delete requests |
+| Usage module | User-wise and tenant-wise token records |
+| Admin module | Client admin APIs and central SaaS admin APIs |
+| Billing-ready module | Package limits, usage summaries, export-ready records |
+| Observability module | Structured logs, request IDs, error records |
+
+### Data Layer Modules
+
+PostgreSQL should be the system of record. Qdrant should store vectors and retrieval metadata, not billing or user records.
+
+Recommended PostgreSQL tables:
+
+| Table | Purpose |
+| --- | --- |
+| `users` | User identity and profile fields |
+| `tenants` | Client workspaces |
+| `tenant_memberships` | User-to-tenant role mapping |
+| `roles` or role enum | Developer, client admin, central SaaS admin |
+| `conversations` | Chat sessions |
+| `messages` | User and assistant messages |
+| `sources` | Uploaded documents/repository files |
+| `ingestion_jobs` | Async ingestion status and errors |
+| `usage_records` | Input/output tokens by user, tenant, model, conversation |
+| `package_limits` | Plan name, token limit, storage limit, usage limit |
+| `billing_exports` | Manual billing snapshots or future Stripe export records |
+| `audit_events` | Admin actions, source deletion, package changes |
+
+Recommended Qdrant collection strategy:
+
+| Collection | Purpose |
+| --- | --- |
+| `universal_coding_knowledge` | Shared coding manuals, public best practices, framework notes |
+| `tenant_knowledge` | Private client chunks with strict `tenant_id`, `workspace_id`, `source_id`, language, and file metadata |
+
+Larger clients can later move to a dedicated collection or dedicated Qdrant cluster.
+
+### Ingestion and RAG/MLOps Modules
+
+For MVP, treat RAG/MLOps as a practical ingestion and evaluation pipeline, not a full model-training platform.
+
+RAG pipeline:
+
+1. Client admin uploads file or repository ZIP.
+2. API stores file in object storage.
+3. API creates an `ingestion_jobs` record.
+4. API queues a background ingestion job.
+5. Worker downloads the file from object storage.
+6. Worker filters unsupported files and obvious secrets.
+7. Worker parses code/docs and detects language where possible.
+8. Worker chunks content using code-aware chunking.
+9. Worker creates embeddings through embedding API or hosted embedding model.
+10. Worker upserts vectors into Qdrant with tenant/source/file/language metadata.
+11. Worker stores source and chunk metadata in PostgreSQL.
+12. Worker marks ingestion job as completed or failed.
+13. Chat retrieval fetches universal coding knowledge plus tenant-specific private chunks.
+14. LLM receives retrieved context and generates cited answer.
+
+RAG/MLOps deliverables:
+
+| Deliverable | MVP Requirement |
+| --- | --- |
+| Chunking strategy | Separate behavior for code, Markdown/text, and large files |
+| Metadata schema | `tenant_id`, `workspace_id`, `source_id`, file path, language, chunk ID |
+| Embedding process | Batch-safe and retryable |
+| Evaluation set | 50-100 questions across Python, PHP, .NET, private docs, and DevOps |
+| Prompt versioning | Track prompt templates in code or config |
+| Retrieval evaluation | Check relevance, citation accuracy, and cross-tenant isolation |
+| Knowledge refresh | Re-upload or delete/re-ingest in MVP; automated sync later |
+
+### MVP Module Count Summary
+
+| Category | Count | Notes |
+| --- | ---: | --- |
+| Frontend apps | 1 | One role-aware Next.js app |
+| Backend apps | 1 | One modular FastAPI API |
+| Worker apps | 1 | One ingestion/RAG worker |
+| Managed databases | 2 | PostgreSQL and Qdrant |
+| Managed storage/queue | 2 | Object storage and Redis/queue |
+| Hosted model APIs | 1-2 | Chat LLM plus embedding model/API |
+
+This is enough to support the full MVP without creating unnecessary microservice overhead.
+
 ### MVP Team
 
 | Role | Primary Ownership | Secondary Responsibility |
@@ -116,14 +283,90 @@ A task is done only when:
 
 Recommended MVP deployment:
 
-- Frontend: Vercel or Cloudflare Pages.
-- Backend: Dockerized API container on ECS/Fargate, Render, Railway, or similar.
-- PostgreSQL: managed database.
-- Redis/queue: managed Redis or lightweight managed queue.
-- Object storage: S3-compatible bucket.
-- Vector DB: shared Qdrant Cloud or small managed cluster with tenant filters.
+- Frontend: Vercel, Cloudflare Pages, or AWS Amplify.
+- Backend: Dockerized API container on AWS ECS Fargate for an AWS-first MVP.
+- Worker: Dockerized worker service on AWS ECS Fargate.
+- PostgreSQL: Amazon RDS PostgreSQL.
+- Redis/queue: Amazon ElastiCache Redis or SQS for queue-only MVP needs.
+- Object storage: Amazon S3.
+- Vector DB: Qdrant Cloud or self-managed Qdrant on a small VM/container if needed.
 - LLM: hosted LLM API first, such as GPT-5.4 mini or equivalent.
-- Monitoring: cloud logs plus basic metrics and alerts.
+- Monitoring: CloudWatch logs/metrics plus basic alerts.
+
+### AWS-First MVP Recommendation
+
+Recommended AWS MVP setup:
+
+| Component | AWS Service | MVP Recommendation |
+| --- | --- | --- |
+| Frontend | AWS Amplify or CloudFront + S3 | Use Amplify for speed, or Vercel/Cloudflare if the team prefers frontend-first deployment. |
+| Backend API | ECS Fargate | Run one Dockerized FastAPI service. |
+| Worker | ECS Fargate scheduled/long-running task | Run ingestion jobs without managing servers. |
+| Database | RDS PostgreSQL | Managed backups, stable relational system of record. |
+| Queue | SQS or ElastiCache Redis | Use SQS if only async jobs are needed; Redis if the app also needs cache/streaming coordination. |
+| Object storage | S3 | Store uploads, repository ZIPs, and source snapshots. |
+| Vector DB | Qdrant Cloud | Prefer managed Qdrant for MVP simplicity. |
+| Secrets | AWS Secrets Manager or SSM Parameter Store | Store LLM keys, database credentials, Qdrant keys. |
+| Logs/metrics | CloudWatch | Centralized API and worker logs. |
+| DNS/TLS | Route 53 + ACM | Production domain and TLS certificate if deployed fully on AWS. |
+
+### Do We Need EKS for MVP?
+
+No. **Do not use EKS/Kubernetes for the MVP unless the team already has strong Kubernetes operations experience and a clear enterprise requirement.**
+
+Use ECS Fargate for MVP because:
+
+- Lower operational overhead.
+- Easier deployment and rollback.
+- Enough for one API service and one worker service.
+- No Kubernetes cluster management.
+- Cheaper and faster for a 10-12 week MVP.
+
+Use EKS later when:
+
+- There are many services and worker types.
+- The product needs advanced autoscaling policies.
+- The team introduces self-hosted model serving.
+- Enterprise/private deployment requires Kubernetes.
+- Platform/SRE capacity exists.
+
+### Do We Need GPU for MVP?
+
+No. **GPU is not required for MVP** if the product uses a hosted LLM API and hosted or API-based embeddings.
+
+GPU is only needed later for:
+
+- Self-hosted LLM inference.
+- High-volume self-hosted embedding generation.
+- Fine-tuning or LoRA experiments.
+- Enterprise private model deployment.
+
+MVP should avoid GPU to keep cost, DevOps complexity, and delivery risk low.
+
+### Recommended Repository and Application Structure
+
+If the team starts a code repository, use a monorepo with clear application boundaries:
+
+```text
+.
+├── apps/
+│   ├── web/                 # Next.js frontend
+│   ├── api/                 # FastAPI backend API
+│   └── worker/              # Ingestion/RAG worker
+├── packages/
+│   ├── shared-types/        # Optional generated API/client types
+│   └── prompts/             # Prompt templates and versions
+├── infra/
+│   ├── docker/              # Dockerfiles and compose files
+│   ├── github-actions/      # CI/CD workflow references
+│   └── terraform/           # Optional AWS IaC later
+├── docs/
+│   ├── mvp-user-journeys.md
+│   └── mvp-delivery-and-deployment-guideline.md
+└── README.md
+```
+
+For the first MVP, the infrastructure can be created manually or with lightweight Terraform. Full infrastructure-as-code is recommended before paid pilots, but it should not block the first investor demo if the team is small.
 
 ## 6. Week-by-Week MVP Delivery Plan
 
@@ -418,7 +661,7 @@ Step-by-step process:
 2. Dockerize backend and worker services.
 3. Configure frontend deployment.
 4. Configure managed PostgreSQL, Redis/queue, object storage, and Qdrant.
-5. Set up CI/CD checks and deployment path.
+5. Set up GitHub Actions CI/CD checks and deployment path.
 6. Create development, staging, and production environments.
 7. Set secrets policy and environment variable handling.
 8. Add logging, metrics, and alert basics.
@@ -432,6 +675,27 @@ Key deliverables:
 - Production MVP deployment.
 - Monitoring and backup baseline.
 - Deployment runbook.
+
+Recommended GitHub Actions pipelines:
+
+| Pipeline | Trigger | Steps |
+| --- | --- | --- |
+| Frontend CI | Pull request to main | Install, lint, typecheck, unit tests, build |
+| Backend CI | Pull request to main | Install, lint, typecheck if applicable, unit tests, migration check |
+| Worker CI | Pull request to main | Install, lint, unit tests, ingestion parser tests |
+| Security check | Pull request to main | Secret scan, dependency audit, basic static checks |
+| Staging deploy | Merge to main or manual dispatch | Build images, push to registry, migrate staging DB, deploy API/worker/frontend, run smoke tests |
+| Production deploy | Manual approval | Build or promote image, backup DB, migrate production DB, deploy services, run smoke tests |
+
+Minimum AWS CI/CD path:
+
+1. GitHub Actions builds Docker images for `api-service` and `worker-service`.
+2. Images are pushed to Amazon ECR.
+3. GitHub Actions updates ECS Fargate services.
+4. Database migrations run as a one-off ECS task or controlled CI step.
+5. Frontend deploys to Amplify, Vercel, or Cloudflare Pages.
+6. Smoke tests run against staging/production URL.
+7. Failed smoke test blocks production promotion.
 
 ### QA and Product Analysis Workstream
 
@@ -474,19 +738,40 @@ Before deploying staging or production:
 - Backup policy confirmed.
 - Smoke test checklist prepared.
 
+### AWS Infrastructure Setup Steps
+
+Recommended order for an AWS-first MVP:
+
+1. Create AWS account structure and IAM access policy for the engineering team.
+2. Create ECR repositories for `api-service` and `worker-service`.
+3. Create RDS PostgreSQL instance with automated backups.
+4. Create S3 bucket for uploaded documents and repository ZIPs.
+5. Create SQS queue or ElastiCache Redis for ingestion jobs.
+6. Create ECS cluster using Fargate capacity.
+7. Create ECS task definition for `api-service`.
+8. Create ECS task definition for `worker-service`.
+9. Create Application Load Balancer for the API if using ECS.
+10. Store secrets in AWS Secrets Manager or SSM Parameter Store.
+11. Configure CloudWatch log groups for API and worker.
+12. Connect frontend hosting to the backend API URL.
+13. Configure Route 53 and ACM if using a custom production domain.
+14. Configure GitHub Actions permissions for ECR/ECS deployment.
+15. Run first staging deployment and smoke test.
+
 ### Staging Deployment Steps
 
 1. Build backend container.
 2. Build ingestion worker container.
-3. Deploy database migrations to staging.
-4. Deploy backend API to staging.
-5. Deploy worker to staging.
-6. Deploy frontend to staging.
-7. Configure staging environment variables.
-8. Upload sample knowledge base.
-9. Run smoke tests.
-10. Run role and tenant-isolation tests.
-11. Run demo script against staging.
+3. Push containers to ECR or selected registry.
+4. Deploy database migrations to staging.
+5. Deploy backend API to staging ECS Fargate or selected app platform.
+6. Deploy worker to staging ECS Fargate or selected worker platform.
+7. Deploy frontend to Amplify, Vercel, or Cloudflare Pages.
+8. Configure staging environment variables and secrets.
+9. Upload sample knowledge base.
+10. Run smoke tests.
+11. Run role and tenant-isolation tests.
+12. Run demo script against staging.
 
 ### Production MVP Deployment Steps
 
@@ -494,10 +779,10 @@ Before deploying staging or production:
 2. Freeze release candidate.
 3. Backup current production database if production already exists.
 4. Apply production database migrations.
-5. Deploy backend API.
-6. Deploy ingestion worker.
-7. Deploy frontend.
-8. Verify LLM, Qdrant, PostgreSQL, Redis, and object storage connectivity.
+5. Deploy or promote backend API container.
+6. Deploy or promote ingestion worker container.
+7. Deploy or promote frontend.
+8. Verify LLM, Qdrant, PostgreSQL, Redis/SQS, and object storage connectivity.
 9. Create or verify central SaaS admin account.
 10. Create demo tenant and demo users.
 11. Upload demo knowledge base.

@@ -1105,6 +1105,8 @@ Detailed MVP delivery and deployment artifact: `docs/mvp-delivery-and-deployment
 
 ## 26. Recommended MVP Tech Stack
 
+Detailed module, AWS deployment, CI/CD, EKS, and GPU guidance is maintained in `docs/mvp-delivery-and-deployment-guideline.md`.
+
 | Layer | Recommendation |
 | --- | --- |
 | Frontend | Next.js / React |

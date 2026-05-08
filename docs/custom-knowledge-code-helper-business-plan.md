@@ -410,6 +410,36 @@ The MVP should support Python first, then add PHP and .NET as additional support
 
 Example cost logic: public pricing for major LLM providers changes frequently and should be verified immediately before investor submission. For cost-sensitive workloads, model routing is important: simple questions can go to a cheaper model, while complex code debugging or architecture tasks can go to a stronger model.
 
+### Hosted LLM API Feasibility for MVP
+
+For the MVP, the recommended single hosted LLM is **GPT-5.4 mini** or an equivalent cost-efficient coding-capable hosted model. This keeps the product simple: one hosted LLM generates chat answers, while Qdrant retrieves universal coding knowledge and tenant-specific private context.
+
+Indicative public pricing should be verified before investor submission. As of the latest planning assumption, OpenAI lists GPT-5.4 mini at approximately:
+
+| Model | Input Cost | Output Cost | Positioning |
+| --- | ---: | ---: | --- |
+| GPT-5.4 mini | $0.75 / 1M tokens | $4.50 / 1M tokens | Recommended MVP primary model for coding quality and cost balance |
+| GPT-5 mini | $0.25 / 1M tokens | $2.00 / 1M tokens | Lower-cost fallback candidate for simpler requests |
+| Gemini 2.5 Flash | $0.30 / 1M tokens | $2.50 / 1M tokens | Alternative provider candidate for cost comparison |
+| Gemini 2.5 Flash-Lite | $0.10 / 1M tokens | $0.40 / 1M tokens | Very low-cost option for simple classification, summarization, or fallback tasks |
+
+Sources to verify before formal investor use:
+
+- OpenAI API pricing: <https://openai.com/api/pricing/>
+- OpenAI GPT-5.4 mini model page: <https://developers.openai.com/api/docs/models/gpt-5.4-mini>
+- OpenAI GPT-5 mini model page: <https://developers.openai.com/api/docs/models/gpt-5-mini>
+- Google Gemini API pricing: <https://ai.google.dev/pricing>
+
+Example monthly LLM cost estimate for one active business client:
+
+| Monthly Usage Assumption | Cost Calculation | Estimated LLM Cost |
+| --- | --- | ---: |
+| 20M input tokens | 20 x $0.75 | $15.00 |
+| 5M output tokens | 5 x $4.50 | $22.50 |
+| Total | GPT-5.4 mini usage estimate | **$37.50/month** |
+
+This supports a feasible SaaS business case if the product includes package limits, token metering, caching, source filtering, and overage billing. A $499/month business plan can absorb estimated LLM usage, Qdrant, PostgreSQL, hosting, storage, monitoring, and support when usage caps are enforced. The company should not offer unlimited usage in early packages.
+
 ### Phase 1 Model Strategy
 
 Use a model router:
@@ -584,6 +614,7 @@ Assumptions:
 - Average paying team: $499/month
 - LLM and infrastructure cost per team: $100-$180/month
 - Estimated gross margin: 60%-80%
+- Hosted LLM usage is controlled through included token limits, caching, retrieval limits, and overage billing.
 
 | Customers | Estimated Monthly Revenue |
 | ---: | ---: |
@@ -591,6 +622,8 @@ Assumptions:
 | 50 teams | ~$25k MRR |
 | 100 teams | ~$50k MRR |
 | 500 teams | ~$250k MRR |
+
+The hosted LLM API is economically feasible because the product is not reselling raw model access. The customer pays for a client-wise coding knowledge SaaS layer: private repository Q&A, universal coding knowledge, tenant isolation, admin/user usage reporting, source citations, and billing controls.
 
 ## 14. MVP Feature Scope
 

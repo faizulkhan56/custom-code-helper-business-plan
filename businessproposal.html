@@ -897,7 +897,7 @@
 
         <article class="card">
           <h3>Gross Margin Assumption</h3>
-          <p>Example operating assumption: average paying team at $499/month, with LLM and infrastructure cost of $100-$180/month per team after usage controls.</p>
+          <p>Example operating assumption: average paying team at $499/month, with LLM and infrastructure cost of $100-$180/month per team after usage controls. A hosted model such as GPT-5.4 mini or an equivalent coding-capable model can be feasible for MVP when packages include token limits, caching, retrieval controls, and overage billing.</p>
           <div class="bar-chart" style="margin-top: 18px;">
             <div class="bar-row">
               <span>Revenue</span>
@@ -915,6 +915,18 @@
               <strong>60%-80%</strong>
             </div>
           </div>
+        </article>
+      </div>
+
+      <div class="grid two" style="margin-top: 22px;">
+        <article class="card">
+          <h3>Hosted LLM Feasibility</h3>
+          <p>For MVP, the product should use one hosted LLM API for answer generation. Qdrant remains the retrieval layer, not a second LLM. The business case works because customers pay for the SaaS knowledge layer: private repo Q&A, universal coding knowledge, tenant isolation, admin/user usage reporting, source citations, and billing controls.</p>
+        </article>
+
+        <article class="card">
+          <h3>Example Model Cost</h3>
+          <p>Using indicative public GPT-5.4 mini pricing, 20M input tokens and 5M output tokens would cost about $37.50 in LLM usage. Pricing changes frequently and should be verified against official OpenAI or alternative provider pricing before investor submission.</p>
         </article>
       </div>
     </section>
